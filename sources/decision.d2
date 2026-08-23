@@ -1,0 +1,24 @@
+direction: down
+request: Visual request { shape: oval }
+semantic: Has graph topology? { shape: diamond }
+temporal: Changes over time? { shape: diamond }
+spatial: Geospatial or 3D? { shape: diamond }
+grammar: Data maps to encodings? { shape: diamond }
+precision: Publication vector required? { shape: diamond }
+graphviz: Graphviz / D2
+manim: Manim
+three: PyVista / Three.js
+vega: Vega / ECharts / D3
+tikz: CeTZ / SVG
+matplotlib: Matplotlib / Makie
+request -> semantic
+semantic -> graphviz: yes
+semantic -> temporal: no
+temporal -> manim: yes
+temporal -> spatial: no
+spatial -> three: yes
+spatial -> grammar: no
+grammar -> vega: yes
+grammar -> precision: no
+precision -> tikz: yes
+precision -> matplotlib: no

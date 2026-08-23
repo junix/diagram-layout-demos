@@ -15,6 +15,15 @@ CASES = [
     ("architecture", ["dot", "-Tsvg", str(SOURCES / "architecture.dot"), "-o"]),
     ("knowledge", ["neato", "-Tsvg", str(SOURCES / "knowledge.dot"), "-o"]),
     ("incident", ["d2", "--theme=200", "--pad=48", str(SOURCES / "incident.d2")]),
+    ("data-lineage", ["dot", "-Tsvg", str(SOURCES / "data-lineage.dot"), "-o"]),
+    ("state-machine", ["dot", "-Tsvg", str(SOURCES / "state-machine.dot"), "-o"]),
+    ("radial-ontology", ["twopi", "-Tsvg", str(SOURCES / "radial-ontology.dot"), "-o"]),
+    ("build-pipeline", ["dot", "-Tsvg", str(SOURCES / "build-pipeline.dot"), "-o"]),
+    ("sequence", ["d2", "--theme=200", "--pad=48", str(SOURCES / "sequence.d2")]),
+    ("platform", ["d2", "--theme=200", "--pad=48", str(SOURCES / "platform.d2")]),
+    ("decision", ["d2", "--theme=200", "--pad=48", str(SOURCES / "decision.d2")]),
+    ("ownership", ["d2", "--theme=200", "--pad=48", str(SOURCES / "ownership.d2")]),
+    ("event-storm", ["d2", "--theme=200", "--pad=48", str(SOURCES / "event-storm.d2")]),
 ]
 
 
@@ -24,7 +33,10 @@ def run(command: list[str]) -> None:
 
 
 def main() -> None:
-    for binary in ("dot", "neato", "d2", "rsvg-convert"):
+    catalog = json.loads((ROOT / "catalog.json").read_text())
+    if len(catalog) < 12 or [item["id"] for item in catalog] != [name for name, _ in CASES]:
+        raise SystemExit("catalog and renderer cases must define the same 12+ scenes")
+    for binary in ("dot", "neato", "twopi", "d2", "rsvg-convert"):
         if not shutil.which(binary):
             raise SystemExit(f"missing renderer: {binary}")
     OUT.mkdir(exist_ok=True)
@@ -32,7 +44,7 @@ def main() -> None:
     for name, command in CASES:
         svg = OUT / f"{name}.svg"
         png = OUT / f"{name}-transparent.png"
-        if name == "incident":
+        if command[0] == "d2":
             run([*command, str(svg)])
             raw_svg = svg.read_text()
             raw_svg, replacements = re.subn(

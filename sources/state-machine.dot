@@ -1,0 +1,7 @@
+digraph Protocol {
+  graph [bgcolor="transparent", rankdir=LR, pad=.5, nodesep=.48, ranksep=.72, label="RESILIENT SESSION STATE MACHINE", labelloc=t, fontsize=26, fontcolor="#eaf7ff", fontname="Avenir Next"];
+  node [shape=circle, style=filled, fillcolor="#172a43dd", color="#7b9cff", fontcolor="#eaf7ff", fontname="Avenir Next", width=1.15, penwidth=2];
+  edge [color="#91a5ff", fontcolor="#b9c9d5", fontname="Avenir Next", fontsize=10, penwidth=1.5];
+  start [shape=point,color="#54d6c6"]; idle [label="IDLE"]; auth [label="AUTH"]; active [label="ACTIVE",fillcolor="#17433edd",color="#54d6c6"]; drain [label="DRAIN"]; retry [label="RETRY",fillcolor="#493d1cdd",color="#ffd166"]; failed [label="FAILED",shape=doublecircle,fillcolor="#4d2940dd",color="#ff6f91"]; closed [label="CLOSED",shape=doublecircle];
+  start -> idle; idle -> auth [label="connect"]; auth -> active [label="accepted"]; auth -> retry [label="timeout"]; retry -> auth [label="backoff"]; retry -> failed [label="budget spent",color="#ff6f91"]; active -> drain [label="shutdown"]; drain -> closed [label="flushed"]; active -> retry [label="transport loss",color="#ffd166"]; active -> active [label="heartbeat"]; drain -> active [label="cancel shutdown",style=dashed];
+}

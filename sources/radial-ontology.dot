@@ -1,0 +1,9 @@
+graph Climate {
+  graph [bgcolor="transparent", root="climate", overlap=false, pad=.65, ranksep=2.2, label="CLIMATE ADAPTATION ONTOLOGY", labelloc=t, fontsize=26, fontcolor="#eaf7ff", fontname="Avenir Next"];
+  node [shape=ellipse, style=filled, fillcolor="#172a43dd", color="#7896ab", fontcolor="#eaf7ff", fontname="Avenir Next", penwidth=1.5]; edge [color="#7896abaa", penwidth=1.4];
+  climate [label="CLIMATE\nADAPTATION",width=2.0,fillcolor="#17433edd",color="#54d6c6",fontsize=16];
+  hazard [label="HAZARDS",color="#ff6f91"]; exposure [label="EXPOSURE",color="#ffd166"]; capacity [label="CAPACITY",color="#7b9cff"]; action [label="ACTIONS",color="#d183ff"];
+  climate -- {hazard exposure capacity action}; hazard -- {heat flood fire drought}; exposure -- {people housing energy habitat}; capacity -- {finance governance knowledge networks}; action -- {protect accommodate retreat transform};
+  heat -- health; flood -- drainage; fire -- forest; drought -- water; people -- equity; housing -- codes; energy -- microgrid; habitat -- corridor; finance -- insurance; governance -- policy; knowledge -- forecast; networks -- mutual_aid; protect -- seawall; accommodate -- cooling; retreat -- relocation; transform -- restoration;
+  flood -- policy [style=dashed,color="#54d6c6"]; heat -- cooling [style=dashed,color="#54d6c6"]; equity -- relocation [style=dashed,color="#ffd166"]; microgrid -- mutual_aid [style=dashed,color="#7b9cff"];
+}

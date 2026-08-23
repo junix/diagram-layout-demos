@@ -1,12 +1,16 @@
 # Diagram Layout Demos
 
-Automatic layout as a rendering capability: Graphviz handles clustered and free-form graph topology; D2 handles a modern incident-response flow DSL.
+Automatic layout as a rendering capability across twelve reference scenarios: Graphviz handles clustered, radial, free-form, state, lineage, and DAG topology; D2 handles modern semantic diagram DSLs.
 
-| Scene | Preview | Engine |
-|---|---|---|
-| Ocean observatory | ![architecture](out/architecture-transparent.png) | Graphviz `dot` |
-| Living-systems field | ![knowledge](out/knowledge-transparent.png) | Graphviz `neato` |
-| Incident response | ![incident](out/incident-transparent.png) | D2 `dagre` |
+`catalog.json` records the use case, question, diagram family, complexity, and engine-oriented tags.
+
+| Architecture | Knowledge | Incident | Data lineage |
+|---|---|---|---|
+| ![architecture](out/architecture-transparent.png) | ![knowledge](out/knowledge-transparent.png) | ![incident](out/incident-transparent.png) | ![data lineage](out/data-lineage-transparent.png) |
+| State machine | Radial ontology | Build pipeline | Sequence |
+| ![state machine](out/state-machine-transparent.png) | ![radial ontology](out/radial-ontology-transparent.png) | ![build pipeline](out/build-pipeline-transparent.png) | ![sequence](out/sequence-transparent.png) |
+| Platform | Decision | Ownership | Event storm |
+| ![platform](out/platform-transparent.png) | ![decision](out/decision-transparent.png) | ![ownership](out/ownership-transparent.png) | ![event storm](out/event-storm-transparent.png) |
 
 ```bash
 uv sync

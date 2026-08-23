@@ -1,0 +1,17 @@
+direction: right
+tenant: Tenant workloads { web: Web; jobs: Jobs; agents: Agents }
+control: Control plane { api: Admin API; policy: Policy engine; scheduler: Scheduler; catalog: Service catalog }
+data: Regional data plane { gateway: Gateway; mesh: Service mesh; compute: Compute pools; stream: Event fabric; store: Encrypted stores }
+ops: Operations { telemetry: Telemetry; deploy: Progressive delivery; incident: Incident command }
+tenant.web -> data.gateway
+tenant.jobs -> data.compute
+tenant.agents -> data.mesh
+control.api -> control.policy -> control.scheduler
+control.scheduler -> data.compute: signed placement
+control.catalog -> data.gateway: routes
+data.gateway -> data.mesh -> data.compute
+data.compute -> data.stream -> data.store
+data.mesh -> ops.telemetry
+ops.deploy -> control.scheduler
+ops.telemetry -> ops.incident
+ops.incident -> control.policy: temporary guardrail

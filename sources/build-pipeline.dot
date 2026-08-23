@@ -1,0 +1,7 @@
+digraph Pipeline {
+  graph [bgcolor="transparent", rankdir=LR, pad=.45, nodesep=.38, ranksep=.62, splines=ortho, label="MULTI-PLATFORM RELEASE PIPELINE", labelloc=t, fontsize=26, fontcolor="#eaf7ff", fontname="Avenir Next"];
+  node [shape=box,style="rounded,filled",fillcolor="#172a43dd",color="#7896ab",fontcolor="#eaf7ff",fontname="Avenir Next",margin=".18,.11"]; edge [color="#7896ab",penwidth=1.5,arrowsize=.65];
+  commit [label="Commit\n+ contract diff",fillcolor="#17433edd",color="#54d6c6"];
+  lint [label="Lint + format"]; unit [label="Unit tests"]; contract [label="Cross-language\ncontract suite"]; linux [label="Linux x86\nbuild"]; mac [label="macOS arm64\nbuild"]; web [label="Web bundle\nbuild"]; supply [label="SBOM + signing"]; staging [label="Staging smoke"]; canary [label="5% canary",shape=diamond,fillcolor="#493d1cdd",color="#ffd166"]; publish [label="Publish artifacts",fillcolor="#4d2940dd",color="#ff6f91"]; rollback [label="Rollback +\nincident bundle",color="#ff6f91"];
+  commit -> {lint unit contract}; lint -> {linux mac web}; unit -> {linux mac web}; contract -> {linux mac web}; {linux mac web} -> supply -> staging -> canary; canary -> publish [label="healthy",color="#54d6c6"]; canary -> rollback [label="regression",color="#ff6f91"]; rollback -> commit [style=dashed,constraint=false];
+}

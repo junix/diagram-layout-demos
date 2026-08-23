@@ -1,0 +1,22 @@
+shape: sequence_diagram
+client: Client
+edge: Edge Gateway
+cart: Cart Service
+inventory: Inventory
+payment: Payment
+events: Event Log
+client -> edge: POST /checkout
+edge -> cart: validate cart
+cart -> inventory: reserve items
+inventory -> cart: reservation token
+cart -> payment: authorize amount
+payment -> payment: risk + 3DS policy
+payment -> cart: authorization id
+cart -> events: append OrderPlaced
+events -> inventory: confirm reservation
+events -> edge: projection updated
+edge -> client: 202 + tracking id
+client -> edge: "GET /orders/{id}"
+edge -> events: read projection
+events -> edge: confirmed
+edge -> client: 200 confirmed

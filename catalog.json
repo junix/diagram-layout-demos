@@ -1,0 +1,14 @@
+[
+  {"id":"architecture","use":"service architecture","question":"How do edge signals become science products?","family":"clustered graph","complexity":"advanced","tags":["graphviz","architecture","clusters"]},
+  {"id":"knowledge","use":"knowledge map","question":"How do living-system concepts cross-link?","family":"free graph","complexity":"advanced","tags":["graphviz","ontology","neato"]},
+  {"id":"incident","use":"incident response","question":"Which actions recover the service?","family":"flowchart","complexity":"advanced","tags":["d2","operations","decision"]},
+  {"id":"data-lineage","use":"data governance","question":"Where does each analytical field originate?","family":"lineage","complexity":"advanced","tags":["graphviz","data","provenance"]},
+  {"id":"state-machine","use":"protocol design","question":"Which transitions are legal under failure?","family":"state machine","complexity":"advanced","tags":["graphviz","protocol","states"]},
+  {"id":"radial-ontology","use":"domain modeling","question":"How does a climate ontology branch and reconnect?","family":"radial hierarchy","complexity":"advanced","tags":["graphviz","twopi","ontology"]},
+  {"id":"build-pipeline","use":"delivery engineering","question":"Which jobs gate a multi-platform release?","family":"DAG","complexity":"advanced","tags":["graphviz","ci","pipeline"]},
+  {"id":"sequence","use":"distributed tracing","question":"What happens across services during checkout?","family":"sequence","complexity":"advanced","tags":["d2","sequence","services"]},
+  {"id":"platform","use":"platform architecture","question":"How are tenants isolated across control and data planes?","family":"container architecture","complexity":"advanced","tags":["d2","platform","containers"]},
+  {"id":"decision","use":"renderer routing","question":"Which backend should produce a requested visual?","family":"decision tree","complexity":"advanced","tags":["d2","routing","decision"]},
+  {"id":"ownership","use":"team topology","question":"Who owns services, data, and operational outcomes?","family":"ownership map","complexity":"advanced","tags":["d2","organization","teams"]},
+  {"id":"event-storm","use":"domain discovery","question":"How do commands, events, policies, and read models connect?","family":"event storm","complexity":"advanced","tags":["d2","ddd","events"]}
+]

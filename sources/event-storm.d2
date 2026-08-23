@@ -1,0 +1,23 @@
+direction: right
+classes: {
+  command: { style.fill: "#264a78"; style.stroke: "#7b9cff" }
+  event: { style.fill: "#6b3f16"; style.stroke: "#ffad42" }
+  policy: { style.fill: "#4d2940"; style.stroke: "#ff6f91" }
+  read: { style.fill: "#17433e"; style.stroke: "#54d6c6" }
+}
+place: Place order { class: command }
+placed: Order placed { class: event }
+reserve: Reserve inventory { class: policy }
+reserved: Inventory reserved { class: event }
+authorize: Authorize payment { class: policy }
+authorized: Payment authorized { class: event }
+reject: Reject order { class: command }
+confirmed: Order confirmed { class: event }
+projection: Customer order view { class: read }
+warehouse: Warehouse queue { class: read }
+place -> placed -> reserve -> reserved -> authorize -> authorized -> confirmed
+reserve -> reject: unavailable
+authorize -> reject: declined
+placed -> projection
+reserved -> warehouse
+confirmed -> projection

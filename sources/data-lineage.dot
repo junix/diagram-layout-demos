@@ -1,0 +1,9 @@
+digraph Lineage {
+  graph [bgcolor="transparent", rankdir=LR, pad=.45, nodesep=.38, ranksep=.75, splines=ortho, label="ANALYTICS DATA LINEAGE", labelloc=t, fontsize=26, fontcolor="#eaf7ff", fontname="Avenir Next"];
+  node [shape=box, style="rounded,filled", fillcolor="#162a43dd", color="#7896ab", fontcolor="#eaf7ff", fontname="Avenir Next", margin=".2,.12"];
+  edge [color="#7b9cffaa", penwidth=1.6, arrowsize=.7, fontcolor="#aec1cf", fontname="Avenir Next", fontsize=9];
+  subgraph cluster_sources { label="SOURCES"; color="#54d6c6"; fontcolor="#54d6c6"; events [label="Product events\n2.4B/day"]; billing [label="Billing ledger\nappend-only"]; crm [label="Customer master\nSCD2"]; sensors [label="Edge telemetry\n18 regions"]; }
+  subgraph cluster_transform { label="TRANSFORM"; color="#7b9cff"; fontcolor="#7b9cff"; bronze [shape=cylinder,label="Bronze lake"]; identity [label="Identity graph"]; sessions [label="Sessionization"]; metrics [label="Metric contracts"]; quality [shape=diamond,label="Quality gates"]; }
+  subgraph cluster_products { label="PRODUCTS"; color="#ff6f91"; fontcolor="#ff6f91"; marts [shape=cylinder,label="Semantic marts"]; forecast [label="Demand forecast"]; exec [label="Executive scorecard"]; alerts [label="SLO alerting"]; }
+  {events billing crm sensors} -> bronze; crm -> identity; bronze -> identity; bronze -> sessions; identity -> metrics; sessions -> metrics; metrics -> quality; quality -> marts [label="certified"]; marts -> {forecast exec alerts}; quality -> alerts [color="#ffd166",label="violation"];
+}

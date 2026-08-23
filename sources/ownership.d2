@@ -1,0 +1,18 @@
+direction: right
+experience: Experience team { portal: Research portal; auth: Identity; notify: Notifications }
+platform: Platform team { gateway: Edge gateway; mesh: Service mesh; delivery: Delivery controller }
+data: Data team { ingest: Ingestion; quality: Quality engine; lake: Observation lake }
+science: Science team { model: Assimilation; forecast: Forecast API; alert: Coastal alerting }
+reliability: Reliability { slo: SLO catalog; telemetry: Telemetry; incident: Incident command }
+experience.portal -> platform.gateway
+platform.gateway -> data.ingest
+data.ingest -> data.quality -> data.lake
+data.lake -> science.model -> science.forecast
+science.forecast -> experience.portal
+science.model -> science.alert -> experience.notify
+reliability.slo -> platform.gateway
+reliability.slo -> science.forecast
+platform.mesh -> reliability.telemetry
+data.quality -> reliability.telemetry
+reliability.telemetry -> reliability.incident
+reliability.incident -> platform.delivery
