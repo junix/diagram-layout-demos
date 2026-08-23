@@ -1,0 +1,18 @@
+graph LivingSystems {
+  graph [bgcolor="transparent", layout=neato, overlap=false, splines=true, pad="0.55", outputorder=edgesfirst, fontname="Avenir Next", label="LIVING SYSTEMS KNOWLEDGE FIELD", labelloc=t, fontsize=25, fontcolor="#eaf7ff"];
+  node [shape=circle, style=filled, fixedsize=true, width=1.15, fontname="Avenir Next", fontsize=11, fontcolor="#ecf8ff", color="#9db4c4", penwidth=1.4, fillcolor="#172a43dd"];
+  edge [color="#7192a9aa", penwidth=1.15];
+  ecology [label="ECOLOGY", width=1.65, fillcolor="#17433edd", color="#54d6c6", fontsize=15, pos="0,0!"];
+  climate [label="CLIMATE", width=1.5, fillcolor="#283664dd", color="#7b9cff", fontsize=14, pos="3.4,1.7!"];
+  evolution [label="EVOLUTION", width=1.5, fillcolor="#4d2940dd", color="#ff6f91", fontsize=14, pos="-3.3,1.9!"];
+  networks [label="NETWORKS", width=1.5, fillcolor="#493d1cdd", color="#ffd166", fontsize=14, pos="0,-3.0!"];
+  soil [label="Soil", pos="-1.8,-.4!"]; forest [label="Forest", pos="-1.6,1.4!"]; ocean [label="Ocean", pos="1.7,1.3!"]; atmosphere [label="Atmosphere", pos="2.1,-.4!"];
+  genes [label="Genes", pos="-4.7,3.5!"]; selection [label="Selection", pos="-4.8,.4!"]; symbiosis [label="Symbiosis", pos="-3.4,-1.5!"];
+  carbon [label="Carbon", pos="4.8,2.8!"]; energy [label="Energy", pos="4.8,-1.1!"]; water [label="Water", pos="3.7,4.1!"];
+  resilience [label="Resilience", pos="-1.7,-4.3!"]; feedback [label="Feedback", pos="1.5,-4.3!"]; emergence [label="Emergence", pos="0,-5.7!"];
+  ecology -- {soil forest ocean atmosphere} [color="#54d6c6aa"];
+  evolution -- {genes selection symbiosis} [color="#ff6f91aa"];
+  climate -- {carbon energy water} [color="#7b9cffaa"];
+  networks -- {resilience feedback emergence} [color="#ffd166aa"];
+  soil -- carbon; forest -- water; ocean -- carbon; atmosphere -- energy; symbiosis -- forest; selection -- resilience; feedback -- climate; emergence -- ecology; water -- ocean; genes -- networks;
+}

@@ -1,0 +1,33 @@
+direction: right
+title: INCIDENT RESPONSE / 14 MINUTES {
+  shape: text
+  style.font-size: 30
+  style.font-color: "#ECF8FF"
+  near: top-center
+}
+
+classes: {
+  phase: { style.fill: "#14243C"; style.stroke: "#6688A0"; style.font-color: "#E3F1F8"; style.border-radius: 12; style.stroke-width: 2 }
+  signal: { style.fill: "#173F3E"; style.stroke: "#54D6C6"; style.font-color: "#DFFFF8" }
+  choice: { shape: diamond; style.fill: "#4B3E1B"; style.stroke: "#FFD166"; style.font-color: "#FFF2BD" }
+  action: { style.fill: "#3D2842"; style.stroke: "#D183FF"; style.font-color: "#F5E6FF" }
+  resolved: { style.fill: "#44243A"; style.stroke: "#FF6F91"; style.font-color: "#FFE7ED" }
+}
+
+observe: Telemetry Spike\n00:00 { class: signal; shape: hexagon }
+triage: Correlate Signals\n00:02 { class: phase }
+scope: Customer Impact?\n00:04 { class: choice }
+contain: Isolate Region\n00:06 { class: action }
+shadow_route: Shift to Shadow\n00:08 { class: action }
+verify: Golden Probes\n00:11 { class: phase }
+recover: Restore + Watch\n00:14 { class: resolved }
+false_alarm: Annotate Baseline { class: phase }
+
+observe -> triage: page on-call { style.stroke: "#54D6C6"; style.stroke-width: 3 }
+triage -> scope: join traces
+scope -> contain: yes { style.stroke: "#FFD166" }
+scope -> false_alarm: no { style.stroke-dash: 5 }
+contain -> shadow_route: drain
+shadow_route -> verify: replay
+verify -> recover: SLO green { style.stroke: "#FF6F91"; style.stroke-width: 3 }
+false_alarm -> verify: tune detector { style.stroke-dash: 5 }
