@@ -1,0 +1,304 @@
+\documentclass[border=12pt,varwidth=19cm]{standalone}
+% Architecture infographic for diagram-layout-demos
+% Narrative: 12 reference scenes across two layout engines, rendered through a
+% catalog-driven pipeline with pixel-contract quality gates.
+% Reads top to bottom: hero thesis -> scene gallery -> dual engine architecture
+% -> render pipeline -> outputs -> quality contract.
+\usepackage[UTF8,fontset=none]{ctex}
+\IfFontExistsTF{Source Han Serif SC}{
+  \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Source Han Serif SC not found; using Fandol}
+  \setCJKmainfont[BoldFont={FandolSong-Bold}]{FandolSong-Regular}
+  \setCJKsansfont[BoldFont={FandolHei-Bold}]{FandolHei-Regular}
+}
+\IfFontExistsTF{Sarasa Mono SC}{
+  \setmonofont{Sarasa Mono SC}
+  \setCJKmonofont{Sarasa Mono SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Sarasa Mono SC not found; using TeX defaults}
+  \setmonofont{Latin Modern Mono}
+  \setCJKmonofont{FandolFang-Regular}
+}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric}
+\pgfdeclarelayer{edge layer}
+\pgfsetlayers{background,edge layer,main}
+
+% ── Semantic palette ────────────────────────────────────────────────────────
+\definecolor{Paper}{HTML}{F7F4EE}
+\definecolor{Ink}{HTML}{17212B}
+\definecolor{Slate}{HTML}{5D6873}
+\definecolor{Fog}{HTML}{D9E1E3}
+\definecolor{Ocean}{HTML}{356A79}
+\definecolor{Teal}{HTML}{2A9D8F}
+\definecolor{Mint}{HTML}{DDF2EC}
+\definecolor{Coral}{HTML}{E76F51}
+\definecolor{Gold}{HTML}{E9C46A}
+\definecolor{GraphvizColor}{HTML}{2E6F95}
+\definecolor{D2Color}{HTML}{8E44AD}
+\definecolor{QualityColor}{HTML}{E76F51}
+
+\tikzset{
+  every node/.style={font=\rmfamily},
+  % Section waypoint
+  section-dot/.style={
+    circle, draw=Ocean, fill=Ocean, text=white, inner sep=0pt,
+    minimum size=7mm, font=\rmfamily\scriptsize\bfseries
+  },
+  % Scene tile: small multiples — text is all centered, generous padding
+  scene-tile/.style={
+    draw=Fog, fill=white, rounded corners=1.6mm, line width=.6pt,
+    minimum width=38mm, minimum height=30mm, align=center,
+    inner sep=5mm, text=Ink, font=\rmfamily\small
+  },
+  scene-tile-gv/.style={scene-tile, draw=GraphvizColor!50, fill=GraphvizColor!4},
+  scene-tile-d2/.style={scene-tile, draw=D2Color!50, fill=D2Color!4},
+  % Engine blocks
+  engine-block/.style={
+    rounded corners=2.4mm, line width=1pt,
+    minimum width=80mm, minimum height=46mm, align=center,
+    font=\rmfamily\footnotesize\bfseries, text=white, inner sep=5mm
+  },
+  engine-gv/.style={engine-block, fill=GraphvizColor, draw=GraphvizColor!70!black},
+  engine-d2/.style={engine-block, fill=D2Color, draw=D2Color!70!black},
+  % Pipeline step
+  pipe-step/.style={
+    rounded corners=2mm, fill=white, draw=Fog, line width=.6pt,
+    minimum width=28mm, minimum height=18mm, align=center,
+    inner sep=3mm, text=Ink, font=\rmfamily\footnotesize
+  },
+  pipe-step-gate/.style={
+    pipe-step, draw=QualityColor!60, fill=QualityColor!6,
+    font=\rmfamily\footnotesize\bfseries, text=QualityColor!80!black
+  },
+  % Quality metric tiles
+  quality-tile/.style={
+    rounded corners=2mm, fill=white, draw=QualityColor!40, line width=.6pt,
+    minimum width=42mm, minimum height=24mm, align=center,
+    inner sep=3.5mm, text=QualityColor!80!black
+  },
+  % Output tile
+  output-tile/.style={
+    rounded corners=2mm, fill=white, draw=Ocean!30, line width=.6pt,
+    minimum width=46mm, minimum height=22mm, align=center,
+    inner sep=3.5mm, text=Ink
+  },
+  % Edge grammar
+  call/.style={
+    -{Latex[length=2mm,width=1.4mm]}, draw=Ocean,
+    line width=.9pt, rounded corners=2mm
+  },
+  gate-edge/.style={
+    -{Stealth[length=1.8mm,width=1.4mm]}, draw=QualityColor,
+    line width=.9pt, rounded corners=2mm
+  },
+  boundary/.style={draw=Slate!40, dash pattern=on 2pt off 2.2pt, line width=.6pt},
+  % Typography
+  section-title/.style={font=\rmfamily\large\bfseries, text=Ink},
+  section-sub/.style={font=\rmfamily\scriptsize, text=Slate},
+  kicker/.style={font=\rmfamily\scriptsize\bfseries, text=Teal},
+  pill/.style={
+    rounded corners=3mm, fill=Mint, text=Ocean,
+    inner xsep=2.8mm, inner ysep=1.2mm,
+    font=\rmfamily\scriptsize\bfseries
+  },
+  pill-gv/.style={pill, fill=GraphvizColor!10, text=GraphvizColor!80!black},
+  pill-d2/.style={pill, fill=D2Color!10, text=D2Color!80!black},
+  pill-quality/.style={pill, fill=QualityColor!10, text=QualityColor!80!black},
+  edge label/.style={font=\rmfamily\scriptsize, text=Slate},
+  note/.style={font=\rmfamily\scriptsize, text=Slate}
+}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % ── Canvas ───────────────────────────────────────────────────────────────
+  \begin{pgfonlayer}{background}
+    \fill[Paper,rounded corners=2mm] (-.6,0) rectangle (17.9,30.5);
+  \end{pgfonlayer}
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % SECTION 1 — Hero / Thesis
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[kicker,anchor=west] at (0,29.9) {架构信息图 · DIAGRAM-LAYOUT-DEMOS};
+  \node[anchor=west,font=\rmfamily\Large\bfseries,text=Ink]
+    at (0,29.25) {十二种图示布局场景，一条渲染流水线};
+  \node[section-sub,anchor=west,text width=13cm] at (0,28.65)
+    {Graphviz 与 D2 双引擎驱动，以目录为契约，经过像素合约校验，批量产出 SVG 与透明 PNG 参考图示。};
+  \node[pill,anchor=east] at (17.7,29.10) {读法：自上而下};
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % SECTION 2 — Scene Gallery (12 scenes, 4x3 grid)
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[section-dot] at (0.7,26.70) {02};
+  \node[section-title,anchor=west] at (1.5,26.78) {十二种参考场景};
+  \node[section-sub,anchor=west,text width=12cm] at (1.5,26.30) {覆盖架构、知识、事件、血缘、状态、流水线等常见图示家族。颜色标记所属引擎。};
+
+  % ── Row 1 ────────────────────────────────────────────────────────────────
+  \node[scene-tile-gv] (s-arch) at (2.35,24.30) {服务架构\\\scriptsize\ttfamily architecture\\\scriptsize clustered graph};
+  \node[scene-tile-gv] (s-know) at (6.55,24.30) {知识图谱\\\scriptsize\ttfamily knowledge\\\scriptsize free graph};
+  \node[scene-tile-d2] (s-inc) at (10.75,24.30) {故障响应\\\scriptsize\ttfamily incident\\\scriptsize flowchart};
+  \node[scene-tile-gv] (s-lineage) at (14.95,24.30) {数据血缘\\\scriptsize\ttfamily data-lineage\\\scriptsize lineage};
+
+  % ── Row 2 ────────────────────────────────────────────────────────────────
+  \node[scene-tile-gv] (s-state) at (2.35,21.20) {状态机\\\scriptsize\ttfamily state-machine\\\scriptsize state machine};
+  \node[scene-tile-gv] (s-radial) at (6.55,21.20) {径向本体\\\scriptsize\ttfamily radial-ontology\\\scriptsize radial hierarchy};
+  \node[scene-tile-gv] (s-build) at (10.75,21.20) {构建流水线\\\scriptsize\ttfamily build-pipeline\\\scriptsize DAG};
+  \node[scene-tile-d2] (s-seq) at (14.95,21.20) {时序追踪\\\scriptsize\ttfamily sequence\\\scriptsize sequence};
+
+  % ── Row 3 ────────────────────────────────────────────────────────────────
+  \node[scene-tile-d2] (s-platform) at (2.35,18.10) {平台架构\\\scriptsize\ttfamily platform\\\scriptsize container arch};
+  \node[scene-tile-d2] (s-decision) at (6.55,18.10) {路由决策\\\scriptsize\ttfamily decision\\\scriptsize decision tree};
+  \node[scene-tile-d2] (s-owner) at (10.75,18.10) {团队归属\\\scriptsize\ttfamily ownership\\\scriptsize ownership map};
+  \node[scene-tile-d2] (s-event) at (14.95,18.10) {事件风暴\\\scriptsize\ttfamily event-storm\\\scriptsize event storm};
+
+  % Legend
+  \node[pill-gv] at (3.8,16.40) {Graphviz · 7 场景};
+  \node[pill-d2] at (8.6,16.40) {D2 · 5 场景};
+  \node[note,anchor=east] at (17.7,16.40) {每个场景 = 独立 DSL 源文件 + SVG + 透明 PNG};
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % SECTION 3 — Dual Engine Architecture
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[section-dot] at (0.7,16.20) {03};
+  \node[section-title,anchor=west] at (1.5,16.28) {双引擎架构};
+  \node[section-sub,anchor=west] at (1.5,15.80) {按图族特征选择最合适的布局引擎，能力互补。};
+
+  \node[engine-gv] (eng-gv) at (4.8,13.80) {
+    \textbf{\large Graphviz}\\[4pt]
+    \scriptsize 经典图布局引擎\\[2pt]
+    \scriptsize dot · neato · twopi 三布局器\\
+    \scriptsize 聚类 / 自由 / 径向 / 状态 / DAG / 血缘
+  };
+  \node[engine-d2] (eng-d2) at (13.0,13.80) {
+    \textbf{\large D2}\\[4pt]
+    \scriptsize 现代语义 DSL\\[2pt]
+    \scriptsize 声明式 · 主题化 · 容器嵌套\\
+    \scriptsize 时序 / 决策 / 平台 / 归属 / 事件风暴
+  };
+
+  % Engine descriptions (below blocks, clear of all edges)
+  \node[note,anchor=north west,text width=75mm] at (1.0,10.65)
+    {\textbf{Graphviz 擅长：}拓扑密集型图示——自动聚类、层级布局、径向展开、状态转换、有向无环图、数据血缘追溯。};
+  \node[note,anchor=north west,text width=75mm] at (9.3,10.65)
+    {\textbf{D2 擅长：}语义密集型图示——容器化架构、时序交互、决策分支、团队拓扑、事件驱动领域建模。};
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % SECTION 4 — Render Pipeline
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[section-dot] at (0.7,9.40) {04};
+  \node[section-title,anchor=west] at (1.5,9.48) {渲染流水线};
+  \node[section-sub,anchor=west] at (1.5,9.00) {catalog 驱动，五步串联，末端设像素合约质量门。};
+
+  \node[pipe-step] (p1) at (1.8,7.75) {
+    \textbf{catalog.json}\\
+    \scriptsize 场景目录\\
+    \scriptsize\ttfamily id / family / tags
+  };
+  \node[pipe-step] (p2) at (5.4,7.75) {
+    \textbf{DSL 源文件}\\
+    \scriptsize sources/*.dot\\
+    \scriptsize sources/*.d2
+  };
+  \node[pipe-step] (p3) at (9.0,7.75) {
+    \textbf{引擎编译}\\
+    \scriptsize dot / neato / twopi\\
+    \scriptsize d2 --theme=200
+  };
+  \node[pipe-step] (p4) at (12.6,7.75) {
+    \textbf{透明栅格化}\\
+    \scriptsize rsvg-convert\\
+    \scriptsize --background=none
+  };
+  \node[pipe-step-gate] (p5) at (16.2,7.75) {
+    \textbf{像素合约}\\
+    \scriptsize 三重校验
+  };
+
+  % Pipeline arrows — horizontal only
+  \begin{pgfonlayer}{edge layer}
+    \draw[call] (p1.east) -- (p2.west);
+    \draw[call] (p2.east) -- (p3.west);
+    \draw[call] (p3.east) -- (p4.west);
+    \draw[gate-edge] (p4.east) -- (p5.west);
+  \end{pgfonlayer}
+
+  \node[edge label,anchor=south] at ($(p1.east)!0.5!(p2.west)$) {驱动};
+  \node[edge label,anchor=south] at ($(p2.east)!0.5!(p3.west)$) {输入};
+  \node[edge label,anchor=south] at ($(p3.east)!0.5!(p4.west)$) {SVG};
+  \node[edge label,anchor=south] at ($(p4.east)!0.5!(p5.west)$) {PNG};
+
+  % D2 note — left side, well clear of connector paths
+  \node[note,anchor=west,text width=75mm] at (0,6.50)
+    {D2 输出：移除首帧背景矩形，保证透明背景契约一致。};
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % Outputs
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[section-title,anchor=west,font=\rmfamily\normalsize\bfseries] at (0,5.50) {输出产物};
+
+  % Outputs aligned directly below pipeline steps 3,4,5
+  \node[output-tile] (out-svg) at (9.0,4.50) {
+    \textbf{SVG}\\
+    \scriptsize 矢量可编辑\\
+    \scriptsize out/*.svg
+  };
+  \node[output-tile] (out-png) at (12.6,4.50) {
+    \textbf{透明 PNG}\\
+    \scriptsize 1600px 宽，透明背景\\
+    \scriptsize out/*-transparent.png
+  };
+  \node[output-tile] (out-json) at (16.2,4.50) {
+    \textbf{校验报告}\\
+    \scriptsize JSON 清单\\
+    \scriptsize validated report
+  };
+
+  % Straight vertical arrows — no crossings
+  \begin{pgfonlayer}{edge layer}
+    \draw[call] (p3.south) -- (out-svg.north);
+    \draw[call] (p4.south) -- (out-png.north);
+    \draw[gate-edge] (p5.south) -- (out-json.north);
+  \end{pgfonlayer}
+
+  % ══════════════════════════════════════════════════════════════════════════
+  % Quality Contract
+  % ══════════════════════════════════════════════════════════════════════════
+  \node[pill-quality,anchor=west] at (0,3.20) {像素合约 · 三重校验};
+
+  \node[quality-tile,anchor=west] (qm1) at (0,2.10) {
+    \textbf{透明率 $\ge$ 5\%}\\
+    \scriptsize histogram[0] / pixels
+  };
+  \node[quality-tile] (qm2) at (5.5,2.10) {
+    \textbf{可见率 $\ge$ 3\%}\\
+    \scriptsize alpha $>$ 16 的像素比例
+  };
+  \node[quality-tile] (qm3) at (10.5,2.10) {
+    \textbf{色彩数 $\ge$ 1500}\\
+    \scriptsize 彩色像素（RGBA 差 $>$ 24）
+  };
+
+  % Quality gate arrow — down then left along bottom, clear of output tiles
+  \begin{pgfonlayer}{edge layer}
+    \draw[gate-edge] (out-json.south) -- ++(0,-0.8) -| (qm3.north);
+  \end{pgfonlayer}
+
+  % Failure note
+  \node[note,anchor=west,text width=100mm] at (0,1.40)
+    {任一校验失败即中止并报错，确保 12 个场景全部满足输出质量底线。};
+
+  % Footer
+  \draw[boundary] (0,0.85) -- (17.7,0.85);
+  \node[note,anchor=west] at (0,0.55)
+    {构建：\ttfamily uv sync \&\& uv run python scripts/render.py \quad|\quad 依赖：graphviz · d2 · librsvg · pillow};
+  \node[note,anchor=east] at (17.7,0.55)
+    {diagram-layout-demos v0.1.0};
+
+\end{tikzpicture}
+\end{document}

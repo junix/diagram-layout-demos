@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "project": "diagram-layout-demos",
+  "figure_id": "architecture-infographic",
+  "title": "diagram-layout-demos 架构信息图",
+  "language": "zh-CN",
+  "narrative_thesis": "十二种图示布局场景，一条渲染流水线：Graphviz 与 D2 双引擎驱动，以目录为契约，经过像素合约校验，批量产出 SVG 与透明 PNG 参考图示。",
+  "sections": [
+    "hero: 项目主题与核心论点",
+    "scene-gallery: 12 种参考场景（4x3 网格，颜色标记引擎）",
+    "dual-engine: Graphviz + D2 双引擎架构对比",
+    "pipeline: catalog 驱动的五步渲染流水线",
+    "outputs: SVG / 透明 PNG / 校验报告三类产物",
+    "quality-contract: 像素合约三重校验"
+  ],
+  "source": {
+    "type": "tikz-standalone",
+    "engine": "xelatex",
+    "packages": [
+      "ctex",
+      "tikz",
+      "xcolor"
+    ],
+    "tikz_libraries": [
+      "arrows.meta",
+      "backgrounds",
+      "calc",
+      "fit",
+      "positioning",
+      "shapes.geometric"
+    ]
+  },
+  "palette": {
+    "paper": "#F7F4EE",
+    "ink": "#17212B",
+    "slate": "#5D6873",
+    "ocean": "#356A79",
+    "teal": "#2A9D8F",
+    "graphviz": "#2E6F95",
+    "d2": "#8E44AD",
+    "quality": "#E76F51"
+  },
+  "fonts": {
+    "serif_cjk": "Source Han Serif SC",
+    "mono_cjk": "Sarasa Mono SC"
+  },
+  "outputs": {
+    "tex": {
+      "filename": "architecture-infographic.tex",
+      "size_bytes": 16237,
+      "sha256": "966f253a6e9eea7405ef40c5e0ef33a0852fd68d887813de84e976b5f5876dd5"
+    },
+    "pdf": {
+      "filename": "architecture-infographic.pdf",
+      "size_bytes": 104907,
+      "sha256": "b0cf2514097e4f7867650a8750fe84feeadebb826dbd84d59840e3c073e92c18"
+    },
+    "svg": {
+      "filename": "architecture-infographic.svg",
+      "size_bytes": 890910,
+      "sha256": "714bc98da3ee939864145980e5da8c2ba7052dec2817cfe8feec589c9ccf81f9"
+    },
+    "png": {
+      "filename": "architecture-infographic.png",
+      "size_bytes": 554817,
+      "sha256": "7d0232d8222278ad36728cf39e8e7f968ef15ee2cf4808c2caf7d53b48c4879c",
+      "width_px": 1719,
+      "height_px": 2715,
+      "dpi": 220
+    }
+  },
+  "build_command": "xelatex -interaction=nonstopmode architecture-infographic.tex (2-pass)",
+  "svg_conversion": "pdftocairo -svg",
+  "png_conversion": "rsvg-convert --background-color=white --dpi-x=220 --dpi-y=220",
+  "provenance": {
+    "project_readme": "README.md",
+    "catalog": "catalog.json",
+    "render_script": "scripts/render.py",
+    "source_files": "sources/*.dot, sources/*.d2"
+  },
+  "rendered_at": "2026-08-24T17:20:51.337934+00:00"
+}
