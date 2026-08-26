@@ -6,14 +6,14 @@
 % -> render pipeline -> outputs -> quality contract.
 \usepackage[UTF8,fontset=none]{ctex}
 \IfFontExistsTF{Source Han Serif SC}{
-  \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setCJKsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setmainfont[BoldFont={Source Han Serif SC Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{Source Han Serif SC}
+  \setsansfont[BoldFont={Source Han Serif SC Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{Source Han Serif SC}
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{Source Han Serif SC}
+  \setCJKsansfont[BoldFont={Source Han Serif SC Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{Source Han Serif SC}
 }{
   \PackageWarningNoLine{tikz-infographic}{Source Han Serif SC not found; using Fandol}
-  \setCJKmainfont[BoldFont={FandolSong-Bold}]{FandolSong-Regular}
-  \setCJKsansfont[BoldFont={FandolHei-Bold}]{FandolHei-Regular}
+  \setCJKmainfont[BoldFont={FandolSong-Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{FandolSong-Regular}
+  \setCJKsansfont[BoldFont={FandolHei-Bold},LetterSpace=5,BoldFeatures={LetterSpace=5}]{FandolHei-Regular}
 }
 \IfFontExistsTF{Sarasa Mono SC}{
   \setmonofont{Sarasa Mono SC}
