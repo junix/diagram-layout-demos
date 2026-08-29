@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>diagram-layout-demos · 架构总览</title>
+  <script>window.__docErrors=[];window.__docReady=false;window.addEventListener('error',e=>window.__docErrors.push(String(e.error||e.message||'unknown error')));window.addEventListener('unhandledrejection',e=>window.__docErrors.push(String(e.reason||'unhandled rejection')));</script>
+  <script type="application/json" id="doc-meta">{"id":"architecture","title":"diagram-layout-demos 架构总览","status":"draft","audience":"architects","last_updated":"2026-08-29","owners":[],"revisions":[{"date":"2026-08-29","reason":"首次生成"}]}</script>
+  <!-- Authoring-only Narrative IR: Audience=ELI15/new-engineers; Persona=Mentor+Practitioner; Mode=Walkthrough; Epistemics=Confirmed; Progression=ResultFirst; Interaction=Objection when useful; Texture=Conversational. -->
+<style id="site-tokens">
+:root{
+  --paper:#fafbfc; --surface:#ffffff; --surface-muted:#f1f4f8;
+  --ink:#171a1f; --muted:#656b73; --soft:#8a929c;
+  --rule:#d7dce3; --rule-strong:#b8c0cc;
+  --accent:#2563eb; --accent-tint:#e8f0fe; --accent-ink:#1d4ed8; --accent-lit:#3b82f6;
+  --external:#eef0f2;
+  --font-reading:"Source Han Serif SC","思源宋体","Noto Serif CJK SC","Songti SC",serif;
+  --font-title:"Noto Serif SC","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
+  --font-mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --page-width:1280px; --toc-width:180px; --layout-gap:40px; --narrative-width:760px; --note-width:270px; --note-gap:30px; --radius:8px;
+}
+</style>
+  <style>
+    /* 缓动分工：笔迹 smoothstep、进场减速到位、离场对称；粒子在 JS 里恒为 linear */
+    :root {
+      --e-pen: linear(0, .028 10%, .104 20%, .216 30%, .352 40%, .5 50%, .648 60%, .784 70%, .896 80%, .972 90%, 1);
+      --e-in: cubic-bezier(.22, 1, .36, 1);
+      --e-out: cubic-bezier(.65, 0, .35, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--paper); color: var(--ink); }
+    body { margin: 0; font: 17px/1.8 var(--font-reading); }
+    .page { width: min(var(--page-width), calc(100% - 48px)); margin: 0 auto 96px; }
+    .layout { display: grid; grid-template-columns: var(--toc-width) minmax(0, calc(var(--narrative-width) + var(--note-width) + var(--note-gap))); gap: var(--layout-gap); align-items: start; }
+    .toc { position: sticky; top: 32px; padding-top: 76px; color: var(--muted); font: 15px/1.5 var(--font-reading); }
+    .toc strong { display: block; margin-bottom: 10px; color: var(--ink); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+    .toc a { display: block; padding: 6px 0; color: inherit; text-decoration: none; }
+    .toc a:hover, .toc a:focus-visible { color: var(--accent); text-decoration: underline; outline: none; }
+    .content { min-width: 0; }
+    .hero { max-width: var(--narrative-width); padding: 72px 0 48px; border-bottom: 1px solid var(--rule); }
+    .eyebrow, .note-label { color: var(--accent); font: 600 13px/1.4 var(--font-reading); letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 12px 0 16px; font: 700 32px/1.2 var(--font-title); letter-spacing: -.02em; }
+    h2 { margin: 72px 0 22px; font-size: 22px; font-weight: 650; line-height: 1.25; }
+    h3 { margin: 40px 0 12px; font-size: 17px; font-weight: 600; line-height: 1.35; }
+    .lede { color: var(--muted); font-size: 22px; line-height: 1.5; }
+    a { color: var(--accent); }
+    code { font-family: var(--font-mono); font-size: 15px; }
+
+    /* 主叙事列是合同：每一个阅读块都归它 */
+    section > h2, section > h3, section > p, section > ol, section > ul, section > .annotation-row,
+    section > .callout, section > .technical-note, section > figure,
+    section > .table-scroll, section > dl, blockquote {
+      width: min(var(--narrative-width), 100%);
+    }
+    p, li, dd { overflow-wrap: break-word; }
+    .explain { max-width: 34em; }
+    .explain > strong:first-child { color: var(--ink); }
+    ul.features > li { margin-bottom: 10px; }
+    ol.walk > li { margin-bottom: 8px; }
+    dl.stack { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px 20px; margin: 24px 0; font-size: 17px; }
+    dl.stack dt { color: var(--ink); font-weight: 600; }
+    dl.stack dd { margin: 0; color: var(--ink); }
+
+    .note-ref { margin-left: 3px; font: 600 13px/1 var(--font-reading); vertical-align: super; white-space: nowrap; }
+    .note-ref a { display: inline-grid; width: 1.4em; height: 1.4em; place-items: center; border: 1px solid var(--accent); border-radius: 50%; color: var(--accent); text-decoration: none; }
+    .note-ref a:focus-visible, .note-ref a:hover { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .annotation-row { display: grid; grid-template-columns: minmax(0, var(--narrative-width)) var(--note-width); gap: var(--note-gap); align-items: start; width: min(calc(var(--narrative-width) + var(--note-width) + var(--note-gap)), 100%); }
+    .annotation-main { min-width: 0; }
+    .annotation-main > :first-child { margin-top: 0; }
+    .annotation-main > :last-child { margin-bottom: 0; }
+    .sidenote { width: auto; margin: 0; padding: 10px 0 10px 14px; border-left: 2px solid var(--accent); color: var(--muted); font: 13px/1.65 var(--font-reading); }
+    .sidenote .note-label { display: block; margin-bottom: 4px; }
+    .sidenote code { overflow-wrap: anywhere; font-family: var(--font-mono); font-size: 13px; }
+    .section-ref { color: var(--accent); font: 600 15px/1.5 var(--font-reading); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+    .section-ref:hover, .section-ref:focus-visible { color: var(--ink); outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    .callout { margin: 24px 0; padding: 16px 20px; border-left: 4px solid var(--accent); border-radius: var(--radius); background: var(--accent-tint); }
+    .callout-title { margin-bottom: 4px; font-weight: 700; }
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--accent-tint); color: var(--accent-ink); font-size: 13px; line-height: 1.6; }
+
+    /* 图卡：全页唯一一条极浅阴影 */
+    figure.plate { margin: 30px 0; padding: 14px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); box-shadow: 0 1px 2px rgba(23, 26, 31, .06); }
+    figure.plate.zoomable { position: relative; }
+    figure.plate .scroll { overflow-x: auto; overscroll-behavior-inline: contain; }
+    figure.plate svg { display: block; width: 100%; height: auto; }
+    figcaption { min-height: 30px; margin-top: 10px; padding-right: 42px; color: var(--muted); font: 15px/1.6 var(--font-reading); }
+    .figure-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px; }
+    .replay { padding: 4px 14px; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent); font: 15px/1.6 var(--font-reading); cursor: pointer; }
+    .replay:hover { background: var(--accent-tint); }
+    .replay:focus-visible, figure.seq:focus-visible, .step:focus-visible, .node:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .step-hint { margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; color: var(--muted); font-size: 13px; }
+    figure.plate .legend svg { display: inline-block; width: 36px; height: 12px; margin-right: 6px; vertical-align: middle; }
+    .legend line, .legend rect, .legend circle { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+    .legend .lg-fill { fill: var(--accent-tint); stroke: var(--accent); }
+    .legend .lg-ext { fill: var(--external); stroke: var(--muted); }
+    .legend .lg-bound { stroke-width: 1; stroke-dasharray: 4 4; }
+    .legend .lg-store line { stroke: var(--muted); stroke-width: 1; }
+
+    /* SVG 字阶三档（与页面五档独立）与节点类型处理，全部走 token */
+    figure svg text { font: 400 12px var(--font-reading); fill: var(--muted); }
+    figure svg .node text, figure svg .actor text, figure svg .step text.name { font: 600 14px var(--font-reading); fill: var(--ink); }
+    figure svg .lane { fill: var(--surface-muted); }
+    figure svg .lane-name { fill: var(--muted); }
+    figure svg .sub { font: 400 12px var(--font-mono); fill: var(--muted); }
+    figure svg .node rect, figure svg .actor rect { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.5; }
+    figure svg .node.focal .inner { fill: none; stroke: var(--accent); stroke-width: 1; }
+    figure svg .node.external rect { fill: var(--external); stroke: var(--muted); }
+    figure svg .node.store rect, figure svg .node.role circle { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; }
+    figure svg .node.store line { stroke: var(--muted); stroke-width: 1; }
+    figure svg .boundary { fill: none; stroke: var(--muted); stroke-dasharray: 4 4; }
+    figure svg .edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+    figure svg .edge.async { stroke-dasharray: 6 4; }
+    figure svg .lifeline { stroke: var(--rule); stroke-width: 1; }
+    figure svg .arr path { fill: var(--muted); }
+    figure svg .arr.lit path { fill: var(--accent); }
+    figure svg .lead { fill: none; stroke: var(--muted); stroke-width: 1; }
+    figure svg [data-node], figure svg [data-explains], figure svg .step { cursor: pointer; }
+
+    /* A 层：拓扑序错峰（--i 来自拓扑深度）+ 边 draw-in；隐藏初态只在 html.motion-ready 下成立 */
+    figure.anim .node { transition: opacity .5s var(--e-in); transition-delay: calc(var(--i, 0) * 120ms); }
+    html.motion-ready figure.anim:not(.in-view) .node { opacity: 0; }
+    figure.anim path.edge.draw { transition: stroke-dashoffset .8s var(--e-pen) calc(var(--i, 0) * 120ms + 340ms); }
+
+    /* A 层交互：焦点降噪压暗其余，而不是只加亮邻居；不引入第二色相 */
+    figure.anim.hl .node, figure.anim.hl .edge { transition: opacity .12s; }
+    figure.anim.hl .node.dim, figure.anim.hl .edge.dim { opacity: .5; }
+    figure.anim .edge.hl { stroke: var(--accent); }
+    #fig-context .edge.hl { marker-end: url(#fig-context-arr-lit); }
+    #fig-pipeline .edge.hl { marker-end: url(#fig-pipeline-arr-lit); }
+    figure.anim [data-node]:hover rect, figure.anim [data-node]:focus-visible rect,
+    figure.anim [data-node]:hover circle, figure.anim [data-node]:focus-visible circle { stroke: var(--accent-lit); }
+
+    /* A 层：逐步点亮三态 + 第二通道（线宽 / 字重）；终态全亮是三条降级路径共用的静态图 */
+    .motion-ready .step { opacity: .3; transition: opacity .35s ease; }
+    .step .edge { transition: stroke .35s ease, stroke-width .2s ease; }
+    .step .gate { fill: var(--surface); stroke: var(--rule); transition: fill .35s ease, stroke .35s ease; }
+    .step text { transition: fill .35s ease; }
+    .step.done { opacity: .6; }
+    .step.cur { opacity: 1; }
+    .step.done .edge, .step.cur .edge { stroke: var(--accent); }
+    #fig-gates .step.done .edge, #fig-gates .step.cur .edge { marker-end: url(#fig-gates-arr-lit); }
+    .step.done .gate, .step.cur .gate { fill: var(--accent-tint); stroke: var(--accent); }
+    .step.done text, .step.cur text { fill: var(--accent-ink); }
+    .step.cur .edge { stroke-width: 2.5; }
+    .step.cur text { font-weight: 600; }
+    .step.focus .edge { stroke-width: 2.5; }
+    figure.seq.ended .step { opacity: 1; }
+
+    /* 流粒子 */
+    .flow-dot { fill: var(--accent); pointer-events: none; }
+
+    /* 图文联动落点高亮 */
+    .flash { background: var(--accent-tint); outline: 2px solid var(--accent); outline-offset: 6px; transition: background .3s ease; }
+
+    /* 插图查看器（运行时按需生成 <dialog>）*/
+    .figure-zoom-trigger { position: absolute; right: 15px; bottom: 14px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--rule-strong); border-radius: 50%; background: var(--surface); color: var(--accent); font-family: var(--font-reading); cursor: zoom-in; }
+    .figure-zoom-trigger::before { content: ""; position: absolute; left: 8px; top: 7px; width: 9px; height: 9px; border: 1.5px solid currentColor; border-radius: 50%; }
+    .figure-zoom-trigger::after { content: ""; position: absolute; left: 17px; top: 17px; width: 7px; height: 1.5px; background: currentColor; transform: rotate(45deg); transform-origin: left center; }
+    .figure-zoom-trigger:hover { border-color: var(--accent); background: var(--surface-muted); }
+    .figure-zoom-trigger:focus-visible, .figure-lightbox button:focus-visible, .zoom-viewport:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .zoom-placeholder { width: 100%; background: var(--surface-muted); border-radius: 4px; }
+    .figure-lightbox { width: min(96vw, 1600px); height: min(94vh, 1200px); max-width: none; max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); color: var(--ink); }
+    .figure-lightbox::backdrop { background: rgba(23, 26, 31, .72); }
+    .figure-lightbox[open] { display: block; }
+    .zoom-shell { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; }
+    .zoom-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; padding: 8px 12px 8px 18px; border-bottom: 1px solid var(--rule); background: var(--surface); font: 13px/1.4 var(--font-reading); }
+    .zoom-caption { min-width: 0; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+    .zoom-controls { display: flex; align-items: center; flex: none; gap: 6px; }
+    .zoom-controls button { min-width: 34px; height: 34px; padding: 0 9px; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); font: 600 13px/1 var(--font-reading); cursor: pointer; }
+    .zoom-controls button:hover { border-color: var(--accent); color: var(--accent); background: var(--surface-muted); }
+    .zoom-controls .zoom-close { margin-left: 6px; font-size: 17px; }
+    .zoom-viewport { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--surface-muted); }
+    .zoom-stage { display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 24px; }
+    .zoom-stage > svg { display: block; flex: none; max-width: none !important; height: auto; background: var(--surface); border: 1px solid var(--rule); }
+    .zoom-stage .step, .zoom-stage .node { opacity: 1; }
+    body.figure-zoom-open { overflow: hidden; }
+
+    .technical-note { margin: 24px 0; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-muted); }
+    .technical-note summary { cursor: pointer; padding: 10px 14px; color: var(--accent); font: 600 13px/1.4 var(--font-reading); letter-spacing: .06em; }
+    .technical-note p { margin: 0; padding: 0 14px 14px; font-size: 15px; }
+    .table-scroll { overflow-x: auto; overscroll-behavior-inline: contain; }
+    table { width: 100%; min-width: 620px; border-collapse: collapse; font: 15px/1.6 var(--font-reading); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+    th { color: var(--accent); }
+    footer.footnotes { width: min(var(--narrative-width), 100%); margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--muted); font: 15px/1.6 var(--font-reading); }
+
+    /* ?motion=static：取证帧，一切过渡关闭、控件与粒子隐藏 */
+    html[data-motion="static"] * { transition: none !important; animation: none !important; }
+    html[data-motion="static"] .flow-dot, html[data-motion="static"] .replay { display: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      figure.anim .node, figure.anim .edge { opacity: 1; transition: none; }
+      figure.anim path.edge { stroke-dashoffset: 0 !important; transition: none; }
+      .flow-dot { display: none; }
+      figure.seq:not([data-frame="step"]) .step { opacity: 1 }
+      .step, .step .edge, .step .gate, .step text, .flash { transition: none; }
+    }
+    @media (max-width: 1320px) {
+      .layout { display: block; }
+      .toc { position: static; max-width: var(--narrative-width); padding: 24px 0 0; }
+      .toc a { display: inline-block; margin-right: 16px; }
+    }
+    @media (max-width: 960px) {
+      .page { width: min(100% - 32px, var(--page-width)); }
+      .annotation-row { display: block; width: auto; }
+      .sidenote { width: auto; margin: 18px 0; padding: 10px 14px; border: 1px solid var(--rule); border-left: 3px solid var(--accent); background: var(--surface-muted); font-size: 13px; }
+    }
+    @media (max-width: 600px) { .figure-lightbox { width: 100vw; height: 100dvh; border: 0; border-radius: 0; } .zoom-toolbar { gap: 8px; padding-left: 12px; } .zoom-caption { max-width: 72px; } .zoom-controls { gap: 4px; } .zoom-controls button { min-width: 32px; height: 32px; padding: 0 7px; } .zoom-stage { padding: 16px; } }
+    @media print {
+      .page { width: auto; margin: 0; }
+      .layout { display: block; }
+      .toc { display: none; }
+      .sidenote { width: auto; margin: 12px 0; break-inside: avoid; }
+      figure, .callout, .technical-note { break-inside: avoid; }
+      figure.anim .node, figure.anim .edge { opacity: 1 !important; transition: none !important; }
+      figure.anim path.edge { stroke-dashoffset: 0 !important; }
+      .flow-dot, .replay, .figure-zoom-trigger, .figure-lightbox { display: none !important; }
+      figure.seq .step { opacity: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page"><div class="layout">
+    <nav class="toc" aria-label="页面目录"><strong>目录</strong><a href="#product">产品介绍</a><a href="#features">功能与特性</a><a href="#overview">系统总览</a><a href="#walkthrough">主走查</a><a href="#gates">五道闸门</a><a href="#pipeline">场景旅程</a><a href="#catalog">目录与分工</a><a href="#tradeoffs">取舍与风险</a></nav>
+    <div class="content"><header class="hero">
+      <div class="eyebrow">图示渲染参考库 · 架构总览</div>
+      <h1>diagram-layout-demos</h1>
+      <p class="lede">十二个参考图示场景走同一条流水线：布局外包给 Graphviz 与 D2，质量交给三道写死的像素阈值。这一页讲清楚这条流水线上有哪些东西、谁在哪一步把关。</p>
+      <p><span class="badge">2026-08-29</span> <span class="badge">commit 2b30c21</span> <span class="badge">draft</span> <span class="badge">Python 3.12+</span></p>
+    </header>
+
+    <section id="product">
+      <h2>01 · 它把自动布局当成一种渲染能力来展示</h2>
+      <div class="annotation-row">
+      <div class="annotation-main">
+        <p>diagram-layout-demos 是一个参考图库，不是一个绘图库。仓库里没有任何布局算法：十二份图源用两种 DSL 写成（DSL 就是用文本描述一张图的领域语言），其中六份交给 Graphviz 的三种布局程序，六份交给 D2；<code>scripts/render.py</code> 这个 Python 脚本负责把它们逐一编译成 SVG（矢量图），再栅格化成透明底的 PNG（把矢量转成像素图），供 README 的画廊直接引用。</p>
+        <p>它给要挑布局引擎的人用。想知道「集群拓扑用 dot 画出来什么样」「放射状本体用 twopi 长什么样」「时序图交给 D2 省多少事」，打开 README 就能看到十二张由同一条流水线产出的成品图，按图示家族对照着看。</p>
+        <p>它和手画图的区别在质量闸门：每张 PNG 都要过三道像素阈值才算产出，任何一道不过线，整次运行立刻退出。代价是它只认这十二个场景——加一个场景要同时改目录、加图源、再在渲染器里登记一次。</p>
+      </div>
+      <aside class="sidenote" id="note-transparent" role="note"><span class="note-label">01 · 文件名里的 transparent</span>产物叫 <code>*-transparent.png</code> 不是描述，是验收对象：渲染器用 Pillow 逐像素检查透明通道，透明面积不足 5% 的 PNG 过不了关。README 表格里嵌的就是这批文件。</aside>
+      </div>
+    </section>
+
+    <section id="features">
+      <h2>02 · 八件它替你做的事</h2>
+      <ul class="features">
+        <li><strong>十二个参考场景</strong>：覆盖集群图、自由图、时序、状态机、数据谱系、构建 DAG、决策树、事件风暴等十二种图示家族；想比较布局效果时按家族挑着看。</li>
+        <li><strong>双引擎自动布局</strong>：Graphviz 负责结构化拓扑（dot / neato / twopi 三种布局），D2 负责语义化图示（时序、容器、决策树）；按图的形状挑引擎。</li>
+        <li><strong>目录驱动</strong>：<code>catalog.json</code> 记下每个场景的用途、要回答的问题、图示家族与引擎标签，渲染器拿它和自己的场景清单逐一对齐。</li>
+        <li><strong>一条命令全量重渲</strong>：<code>uv run python scripts/render.py</code> 从头跑完十二个场景，中途任何一步失败就停下。</li>
+        <li><strong>透明底出图</strong>：rsvg-convert 按 1600px 宽把 SVG 栅格化成带透明通道的 PNG，嵌进 README 表格不压底色。</li>
+        <li><strong>像素合约自检</strong>：Pillow 读回每张 PNG，量透明面积、可见面积与彩色像素数，三项都过线才算数。</li>
+        <li><strong>D2 背景契约</strong>：D2 会在画布最底垫一块背景矩形，渲染器把它剥掉；剥不到就判定输出格式变了，立即退出。</li>
+        <li><strong>机器可读报告</strong>：跑完打印每个场景的尺寸、透明占比与彩色像素数，最后汇总成一份 JSON。</li>
+      </ul>
+      <p>这八条到此为止：读者知道有这个能力、知道谁在什么场景用它就够了。每条能力内部的实现细节，属于下一层文档的范围。</p>
+    </section>
+
+    <section id="overview">
+      <h2>03 · 整个系统只有一个进程，布局都发生在仓库之外</h2>
+      <p><strong>渲染器是仓库里唯一的可执行逻辑，它自己不画一根线。</strong>工程师用一条命令唤起它；它把图源文本递给装在系统里的三个外部程序（Graphviz 三个布局、D2、rsvg-convert），把产出的 SVG 和 PNG 写进 <code>out/</code> 目录。也就是说，这个仓库的架构重心不在「怎么画」，而在「怎么把画图这件事外包出去、再怎么验收拿回来的东西」。</p>
+
+      <!-- 图计划: 系统上下文图 · 无模式 · 命题句「渲染器自己不画图，布局全部外包给仓库外的三个程序，产物落在 out/」· 6节点/5边 · 预算删掉了 Pillow（它是渲染器内部的一步，不是外部程序）与 uv · A层动效: 拓扑序错峰 + 边 draw-in；交互: 焦点降噪 + 图文联动 -->
+      <figure class="plate anim zoomable" id="context">
+        <div class="scroll">
+        <svg id="fig-context" viewBox="0 0 760 360" role="group" aria-labelledby="fig-context-title fig-context-desc" style="min-width:760px">
+          <title id="fig-context-title">diagram-layout-demos 系统上下文</title>
+          <desc id="fig-context-desc">工程师运行仓库内的渲染器，渲染器把图源交给仓库外的 Graphviz、D2 与 rsvg-convert 三个程序，并把产物写进 out 目录。</desc>
+          <defs>
+            <marker id="fig-context-arr" class="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="fig-context-arr-lit" class="arr lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+          <!-- 绘制顺序即几何：分组底框 → 边 → 边标签 → 不透明节点；--i = 拓扑深度（边取源层号 + 0.5） -->
+          <rect class="boundary" x="90" y="150" width="220" height="202" rx="6"/>
+          <text x="100" y="168">仓库边界</text>
+          <g class="edges">
+            <path class="edge draw" data-from="engineer" data-to="renderer" style="--i:0.5" d="M 78,200 H 102" marker-end="url(#fig-context-arr)"/>
+            <text x="90" y="192" text-anchor="middle">运行</text>
+            <path class="edge draw" data-from="renderer" data-to="graphviz" style="--i:1.5" d="M 288,190 H 350 Q 358,190 358,182 V 76 Q 358,68 366,68 H 422" marker-end="url(#fig-context-arr)"/>
+            <text x="319" y="182" text-anchor="middle">编译</text>
+            <path class="edge draw" data-from="renderer" data-to="d2" style="--i:1.5" d="M 288,210 H 422" marker-end="url(#fig-context-arr)"/>
+            <text x="355" y="202" text-anchor="middle">编译</text>
+            <path class="edge draw" data-from="renderer" data-to="rsvg" style="--i:1.5" d="M 288,222 H 374 Q 382,222 382,230 V 311 Q 382,319 390,319 H 422" marker-end="url(#fig-context-arr)"/>
+            <text x="392" y="270">栅格化</text>
+            <path class="edge draw" data-from="renderer" data-to="out" style="--i:1.5" d="M 195,228 V 272" marker-end="url(#fig-context-arr)"/>
+            <text x="205" y="258">写入</text>
+          </g>
+          <g class="node role" data-node="engineer" data-depth="0" style="--i:0" data-explains="product" aria-label="工程师"><circle cx="48" cy="200" r="22"/><text x="48" y="246" text-anchor="middle">工程师</text></g>
+          <g class="node focal" data-node="renderer" data-depth="1" style="--i:1" data-explains="gates" aria-label="渲染器"><rect x="110" y="172" width="170" height="56" rx="6"/><rect class="inner" x="113" y="175" width="164" height="50" rx="4"/><text x="195" y="207" text-anchor="middle">渲染器</text><text class="sub" x="274" y="188" text-anchor="end">scripts/render.py</text></g>
+          <g class="node store" data-node="out" data-depth="2" style="--i:2" data-explains="tradeoffs" aria-label="产物目录"><rect x="110" y="280" width="170" height="56" rx="6"/><line x1="110" y1="287" x2="280" y2="287"/><text x="195" y="315" text-anchor="middle">产物目录</text><text class="sub" x="274" y="296" text-anchor="end">out/*.svg .png</text></g>
+          <g class="node external" data-node="graphviz" data-depth="2" style="--i:2" data-explains="catalog" aria-label="Graphviz"><rect x="430" y="40" width="170" height="56" rx="6"/><text x="515" y="75" text-anchor="middle">Graphviz</text><text class="sub" x="594" y="56" text-anchor="end">dot · neato · twopi</text></g>
+          <g class="node external" data-node="d2" data-depth="2" style="--i:2" data-explains="catalog" aria-label="D2"><rect x="430" y="168" width="170" height="56" rx="6"/><text x="515" y="203" text-anchor="middle">D2</text><text class="sub" x="594" y="184" text-anchor="end">d2</text></g>
+          <g class="node external" data-node="rsvg" data-depth="2" style="--i:2" data-explains="pipeline" aria-label="rsvg-convert"><rect x="430" y="292" width="170" height="56" rx="6"/><text x="515" y="327" text-anchor="middle">rsvg-convert</text><text class="sub" x="594" y="308" text-anchor="end">SVG → PNG</text></g>
+        </svg>
+        </div>
+        <figcaption>渲染器自己不画图：布局全部外包给仓库外的三个程序，它只负责递图源、转格式、写产物。</figcaption>
+        <div class="legend">
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><line x1="1" y1="6" x2="35" y2="6"/></svg>同步调用</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-fill" x="1" y="1" width="34" height="10" rx="2"/></svg>仓库内的文件与目录</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-ext" x="1" y="1" width="34" height="10" rx="2"/></svg>装在系统里的程序</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-bound" x="1" y="2" width="34" height="8" rx="2"/></svg>仓库边界</span>
+        </div>
+      </figure>
+      <p class="explain"><strong>六个盒子各管一件事。</strong>工程师只面对一条命令；渲染器 <code>scripts/render.py</code> 是仓库里唯一的进程，它读目录、拼命令、验产物；Graphviz、D2、rsvg-convert 三个盒子都在仓库边界之外，缺一个整个仓库就跑不起来；产物目录收下中间的 SVG 和最终的透明 PNG。走一遍调用路径：工程师运行渲染器 → 渲染器把 <code>.dot</code> 图源交给 Graphviz、把 <code>.d2</code> 图源交给 D2 → 拿回 SVG 后再调 rsvg-convert 转成 PNG → 写进 <code>out/</code>。点击图中节点会跳到讲它的段落。</p>
+      <p class="explain"><strong>一个容易混的边界：</strong>Pillow 不在这张图上——它不是外部程序，是渲染器进程里 import 进来的一个库，负责最后的像素验收，所以它属于渲染器那个盒子的内部。图上五条实线都是同步调用、一个虚线框是仓库边界；按降级阶梯删掉的是 <code>uv</code>（只负责唤起，不参与渲染）和 README（它只是产物的读者）。</p>
+
+      <dl class="stack">
+        <dt>语言与运行时</dt><dd>Python 3.12+，依赖只有 <code>pillow</code> 一个</dd>
+        <dt>布局引擎</dt><dd>Graphviz 的 <code>dot</code> / <code>neato</code> / <code>twopi</code>，以及 <code>d2</code></dd>
+        <dt>栅格化</dt><dd><code>rsvg-convert</code>，统一 1600px 宽、保留纵横比</dd>
+        <dt>图源格式</dt><dd>Graphviz 的 <code>.dot</code>（6 份）与 D2 的 <code>.d2</code>（6 份）</dd>
+        <dt>产物</dt><dd><code>out/*.svg</code> 与 <code>out/*-transparent.png</code>，各 12 份</dd>
+      </dl>
+    </section>
+
+    <section id="walkthrough">
+      <h2>04 · 主走查：从图源到透明图</h2>
+      <p>下面这条链贯穿全系统，后面两张图分别是它的两段放大。五个环节各点名它经过的组件与它做的一件事。</p>
+      <ol class="walk">
+        <li><strong>选场景</strong>——渲染器读 <code>catalog.json</code>，把目录里的十二个 id 和自己清单里的十二个名字逐一对齐；顺序或数量对不上就退出。</li>
+        <li><strong>预检</strong>——渲染器逐个确认五个外部程序都装在系统里，缺一个就报出名字退出，不进入渲染。</li>
+        <li><strong>编译</strong>——对每个场景拼一条命令：<code>dot</code> / <code>neato</code> / <code>twopi</code> 接 <code>.dot</code> 图源，<code>d2</code> 接 <code>.d2</code> 图源，产出 <code>out/场景名.svg</code>。</li>
+        <li><strong>定妆</strong>——D2 场景先剥掉画布底部那块背景矩形；随后 rsvg-convert 把 SVG 按 1600px 宽栅格化成透明底 PNG。</li>
+        <li><strong>验收</strong>——Pillow 读回 PNG 量三项指标（透明面积、可见面积、彩色像素数），全部过线才打印报告；任何一道失守，运行当场终止。</li>
+      </ol>
+      <div class="callout">
+        <div class="callout-title">这条走查的名字全站通用</div>
+        「从图源到透明图」是本页选定的主线名。仓库里还没有特性级文档目录，所以暂时没有别处引用它；将来做 <code>docs/design/</code> 时沿用这个名字，两层文档才对得上。
+      </div>
+    </section>
+    <section id="gates">
+      <h2>05 · 五道闸门依次把守，任何一道失守就整次退出</h2>
+      <p>主走查的五个环节不是五个建议，是五道闸门：渲染器把它们按顺序排好，每一道都用「不过就退出」的方式把守。这也是这个仓库最像架构的地方——它没有运行时，只有一条必须一次走完的直线。</p>
+
+      <!-- 图计划: 流程图（逐步点亮） · 无模式 · 命题句「五道闸门依次把守，任何一道失败，整次运行立即退出」· 6节点/5边 · 预算删掉了五条失败分支（按规范画成一句话，不画五条边）· A层动效: 逐步点亮；交互: 单步 hover / click / 键盘 -->
+      <figure class="plate seq zoomable" id="gates-seq" data-hint="gates-hint">
+        <div class="scroll">
+        <svg id="fig-gates" viewBox="0 0 760 300" role="group" aria-labelledby="fig-gates-title fig-gates-desc" style="min-width:760px">
+          <title id="fig-gates-title">一次渲染的五道闸门</title>
+          <desc id="fig-gates-desc">渲染器依次做目录配对、引擎预检、图源编译、背景剥离与像素验收，全部通过后输出校验报告；任何一道失败都会让整次运行退出。</desc>
+          <defs>
+            <marker id="fig-gates-arr" class="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="fig-gates-arr-lit" class="arr lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+          <!-- 绘制顺序：边 → 闸门（不透明） → 终点 -->
+          <g class="step" tabindex="0" aria-label="目录与渲染场景一一配对"><rect class="gate" x="30" y="56" width="180" height="56" rx="6"/><text class="name" x="120" y="82" text-anchor="middle">① 目录配对</text><text class="sub" x="120" y="100" text-anchor="middle">id 与顺序</text></g>
+          <g class="step" tabindex="0" aria-label="确认五个外部程序都已安装"><path class="edge" d="M 210,84 H 282" marker-end="url(#fig-gates-arr)"/><rect class="gate" x="290" y="56" width="180" height="56" rx="6"/><text class="name" x="380" y="82" text-anchor="middle">② 引擎预检</text><text class="sub" x="380" y="100" text-anchor="middle">5 个程序</text></g>
+          <g class="step" tabindex="0" aria-label="把图源编译成 SVG"><path class="edge" d="M 470,84 H 542" marker-end="url(#fig-gates-arr)"/><rect class="gate" x="550" y="56" width="180" height="56" rx="6"/><text class="name" x="640" y="82" text-anchor="middle">③ 图源编译</text><text class="sub" x="640" y="100" text-anchor="middle">dot · d2</text></g>
+          <g class="step" tabindex="0" aria-label="剥掉 D2 输出的背景矩形"><path class="edge" d="M 640,112 V 148 Q 640,156 632,156 H 128 Q 120,156 120,164 V 200" marker-end="url(#fig-gates-arr)"/><text x="380" y="148" text-anchor="middle">全部通过</text><rect class="gate" x="30" y="200" width="180" height="56" rx="6"/><text class="name" x="120" y="226" text-anchor="middle">④ 背景契约</text><text class="sub" x="120" y="244" text-anchor="middle">剥 1 块矩形</text></g>
+          <g class="step" tabindex="0" aria-label="按三项像素阈值验收 PNG"><path class="edge" d="M 210,228 H 282" marker-end="url(#fig-gates-arr)"/><rect class="gate" x="290" y="200" width="180" height="56" rx="6"/><text class="name" x="380" y="226" text-anchor="middle">⑤ 像素合约</text><text class="sub" x="380" y="244" text-anchor="middle">3 项阈值</text></g>
+          <path class="edge" d="M 470,228 H 542" marker-end="url(#fig-gates-arr)"/>
+          <g class="node"><rect x="550" y="200" width="180" height="56" rx="6"/><text x="640" y="226" text-anchor="middle">校验报告</text><text class="sub" x="640" y="244" text-anchor="middle">JSON</text></g>
+        </svg>
+        </div>
+        <figcaption>五道闸门依次把守，任何一道失败，整次运行立即退出。
+          <div class="figure-controls"><button class="replay" type="button">▶ 重放动效</button><p class="step-hint" id="gates-hint" role="status" aria-live="polite" aria-atomic="true">共 5 步</p></div>
+        </figcaption>
+        <div class="legend">
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><line x1="1" y1="6" x2="35" y2="6"/></svg>通过后进入下一道</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-fill" x="1" y="1" width="34" height="10" rx="2"/></svg>最终产物</span>
+        </div>
+      </figure>
+      <p class="explain"><strong>六个盒子就是五道闸门加一份收条。</strong>目录配对确认 <code>catalog.json</code> 和渲染器内部清单说的是同一组场景；引擎预检用 <code>shutil.which</code> 找五个可执行文件；图源编译把十二份图源各自交给该管的引擎；背景契约只对 D2 场景生效；像素合约用 Pillow 读回 PNG 量三项指标。走一遍通过路径：① 配对成功 → ② 五个程序都在 → ③ 十二份图源全部编译成 SVG → ④ D2 的背景矩形被剥掉 → ⑤ 三项阈值都过线 → 输出 JSON 报告。hover 或 ← / → 可以逐步查看。</p>
+      <p class="explain"><strong>为什么图上没有五条失败分支。</strong>五道闸门的失败动作完全一样——打印原因、退出进程——把它们画成五条边只会让读者数五次同一件事，所以这里按惯例写成一句话：任何一道失败，渲染器立刻退出，排在这个场景之后的场景一次都不会跑。图上一条实线表示「通过后进入下一道」，蓝色盒子是唯一的产出。</p>
+    </section>
+
+    <section id="pipeline">
+      <h2>06 · 一个场景的旅程：三次交接，两次落盘</h2>
+      <p>把主走查的第三到第五个环节拆开看，一个场景要经过三次交接：图源交给渲染器、图源文本交给引擎、SVG 交给栅格器。下图按「这一步归谁负责」分成五条横带，粒子沿着四条主线跑，帮你看清哪些东西往下走、哪一步回到渲染器手里。</p>
+
+      <!-- 图计划: 数据流图（责任泳道） · 无模式 · 命题句「图源经过渲染器和引擎各一次，产物在 out/ 落盘两次，最后由像素合约读回」· 11节点/10边 · 预算删掉了 uv 唤起与 README 引用 · A层动效: 流粒子 + 拓扑序错峰；交互: 焦点降噪 -->
+      <figure class="plate anim zoomable" id="pipeline-fig">
+        <div class="scroll">
+        <svg id="fig-pipeline" viewBox="0 0 760 552" role="group" aria-labelledby="fig-pipeline-title fig-pipeline-desc" style="min-width:760px">
+          <title id="fig-pipeline-title">一个场景从图源到透明 PNG 的旅程</title>
+          <desc id="fig-pipeline-desc">场景目录与图源进入渲染器，渲染器把图源交给 Graphviz、D2 与 rsvg-convert，SVG 与 PNG 先后落盘，最后由像素合约读回 PNG 验收。</desc>
+          <defs>
+            <marker id="fig-pipeline-arr" class="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="fig-pipeline-arr-lit" class="arr lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+          <!-- 绘制顺序：责任带 → 边 → 边标签 → 不透明节点 → 不可见流轨道 -->
+          <g class="lanes">
+            <rect class="lane" x="8" y="16" width="744" height="100" rx="6"/>
+            <rect class="lane" x="8" y="124" width="744" height="100" rx="6"/>
+            <rect class="lane" x="8" y="232" width="744" height="100" rx="6"/>
+            <rect class="lane" x="8" y="340" width="744" height="100" rx="6"/>
+            <rect class="lane" x="8" y="448" width="744" height="88" rx="6"/>
+            <text class="lane-name" x="20" y="34">场景定义（仓库内）</text>
+            <text class="lane-name" x="20" y="142">渲染器 · 准备</text>
+            <text class="lane-name" x="20" y="250">外部引擎（仓库外）</text>
+            <text class="lane-name" x="20" y="358">产物 out/</text>
+            <text class="lane-name" x="20" y="466">渲染器 · 验收</text>
+          </g>
+          <g class="edges">
+            <path class="edge draw" data-from="catalog" data-to="pairing" style="--i:0.5" d="M 100,100 V 152" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="110" y="130">配对</text>
+            <path class="edge draw" data-from="dotsrc" data-to="cmdline" style="--i:0.5" d="M 270,100 V 152" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="280" y="130">读入</text>
+            <path class="edge draw" data-from="d2src" data-to="cmdline" style="--i:0.5" d="M 440,100 V 164 Q 440,172 432,172 H 348" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="450" y="136">读入</text>
+            <path class="edge draw" data-from="cmdline" data-to="graphviz" style="--i:1.5" d="M 270,208 V 260" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="280" y="238">编译</text>
+            <path class="edge draw" data-from="cmdline" data-to="d2eng" style="--i:1.5" d="M 305,208 V 236 Q 305,244 313,244 H 432 Q 440,244 440,252 V 260" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="315" y="228">编译</text>
+            <path class="edge draw" data-from="cmdline" data-to="rsvg" style="--i:1.5" d="M 348,196 H 602 Q 610,196 610,204 V 260" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="470" y="190">栅格化</text>
+            <path class="edge draw" data-from="graphviz" data-to="svgout" style="--i:2.5" d="M 270,316 V 392 Q 270,400 278,400 H 362" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="280" y="352">写入</text>
+            <path class="edge draw" data-from="d2eng" data-to="svgout" style="--i:2.5" d="M 440,316 V 368" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="450" y="346">写入</text>
+            <path class="edge draw" data-from="rsvg" data-to="pngout" style="--i:2.5" d="M 610,316 V 368" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="620" y="346">写入</text>
+            <path class="edge draw" data-from="pngout" data-to="contract" style="--i:3.5" d="M 610,424 V 472" marker-end="url(#fig-pipeline-arr)"/>
+            <text x="620" y="452">读回</text>
+          </g>
+          <g class="node store" data-node="catalog" data-depth="0" style="--i:0" aria-label="场景目录"><rect x="30" y="52" width="140" height="48" rx="6"/><line x1="30" y1="59" x2="170" y2="59"/><text x="100" y="87" text-anchor="middle">场景目录</text><text class="sub" x="164" y="67" text-anchor="end">catalog.json</text></g>
+          <g class="node store" data-node="dotsrc" data-depth="0" style="--i:0" aria-label="Graphviz 图源"><rect x="200" y="52" width="140" height="48" rx="6"/><line x1="200" y1="59" x2="340" y2="59"/><text x="270" y="87" text-anchor="middle">Graphviz 图源</text><text class="sub" x="334" y="67" text-anchor="end">*.dot ×6</text></g>
+          <g class="node store" data-node="d2src" data-depth="0" style="--i:0" aria-label="D2 图源"><rect x="370" y="52" width="140" height="48" rx="6"/><line x1="370" y1="59" x2="510" y2="59"/><text x="440" y="87" text-anchor="middle">D2 图源</text><text class="sub" x="504" y="67" text-anchor="end">*.d2 ×6</text></g>
+          <g class="node" data-node="pairing" data-depth="1" style="--i:1" aria-label="场景配对"><rect x="30" y="160" width="140" height="48" rx="6"/><text x="100" y="189" text-anchor="middle">场景配对</text></g>
+          <g class="node" data-node="cmdline" data-depth="1" style="--i:1" aria-label="命令拼装"><rect x="200" y="160" width="140" height="48" rx="6"/><text x="270" y="189" text-anchor="middle">命令拼装</text></g>
+          <g class="node external" data-node="graphviz" data-depth="2" style="--i:2" aria-label="Graphviz"><rect x="200" y="268" width="140" height="48" rx="6"/><text x="270" y="303" text-anchor="middle">Graphviz</text><text class="sub" x="334" y="283" text-anchor="end">dot·neato·twopi</text></g>
+          <g class="node external" data-node="d2eng" data-depth="2" style="--i:2" aria-label="D2"><rect x="370" y="268" width="140" height="48" rx="6"/><text x="440" y="303" text-anchor="middle">D2</text><text class="sub" x="504" y="283" text-anchor="end">--theme=200</text></g>
+          <g class="node external" data-node="rsvg" data-depth="2" style="--i:2" aria-label="rsvg-convert"><rect x="540" y="268" width="140" height="48" rx="6"/><text x="610" y="303" text-anchor="middle">rsvg-convert</text><text class="sub" x="674" y="283" text-anchor="end">1600px</text></g>
+          <g class="node store" data-node="svgout" data-depth="3" style="--i:3" aria-label="SVG 中间产物"><rect x="370" y="376" width="140" height="48" rx="6"/><line x1="370" y1="383" x2="510" y2="383"/><text x="440" y="411" text-anchor="middle">SVG 中间产物</text><text class="sub" x="504" y="391" text-anchor="end">out/*.svg</text></g>
+          <g class="node store" data-node="pngout" data-depth="3" style="--i:3" aria-label="透明 PNG"><rect x="540" y="376" width="140" height="48" rx="6"/><line x1="540" y1="383" x2="680" y2="383"/><text x="610" y="411" text-anchor="middle">透明 PNG</text><text class="sub" x="674" y="391" text-anchor="end">×12</text></g>
+          <g class="node" data-node="contract" data-depth="4" style="--i:4" aria-label="像素合约"><rect x="540" y="480" width="140" height="48" rx="6"/><text x="610" y="515" text-anchor="middle">像素合约</text><text class="sub" x="674" y="495" text-anchor="end">3 项阈值</text></g>
+          <!-- 端到端不可见轨道：粒子沿它跑，几何检查不看它（stroke:none） -->
+          <g class="flow-guides">
+            <path data-flow fill="none" stroke="none" d="M 270,76 V 292"/>
+            <path data-flow fill="none" stroke="none" d="M 440,76 V 164 H 356"/>
+            <path data-flow fill="none" stroke="none" d="M 305,208 V 244 H 440 V 400"/>
+            <path data-flow fill="none" stroke="none" d="M 610,292 V 504"/>
+          </g>
+        </svg>
+        </div>
+        <figcaption>图源经过渲染器和引擎各一次，产物在 out/ 落盘两次，最后由像素合约读回验收。</figcaption>
+        <div class="legend">
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><line x1="1" y1="6" x2="35" y2="6"/></svg>同步调用</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-fill" x="1" y="1" width="34" height="10" rx="2"/></svg>渲染器做的事</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-ext" x="1" y="1" width="34" height="10" rx="2"/></svg>仓库外的程序</span>
+          <span><svg viewBox="0 0 36 12" width="36" height="12" aria-hidden="true" focusable="false"><rect class="lg-store" x="1" y="1" width="34" height="10" rx="2"/><line x1="1" y1="4" x2="35" y2="4"/></svg>图源与产物文件</span>
+        </div>
+      </figure>
+      <p class="explain"><strong>五条横带就是五个负责方。</strong>最上面是仓库里的三份输入：目录、六份 <code>.dot</code>、六份 <code>.d2</code>。第二条是渲染器的准备段：场景配对只做一件事——确认目录和清单说的是同一组场景；命令拼装决定每个场景该调哪个程序、带哪些参数。第三条是三个外部程序，它们真正算出布局。第四条是 <code>out/</code> 里的两类文件，SVG 先落盘、PNG 后落盘。最下面一条又是渲染器：像素合约读回 PNG 做最后验收。走一遍 D2 场景：D2 图源被读入 → 命令拼装交给 D2 → SVG 写进 <code>out/</code> → 同一个渲染器把背景矩形剥掉再写回 → rsvg-convert 转成透明 PNG → 像素合约读回量三项指标。</p>
+      <p class="explain"><strong>易混点：</strong>渲染器出现两次（第二条和第五条横带）不是画重了——它确实在引擎前后各干一段活，横带表达的是「这一步归谁」，不是进程数，进程始终只有一个。四条轨道周期相同、只错开相位，跑得快慢一样，长的那条只是路更远。十条边都是实线同步调用，没有异步边。按预算删掉的是 <code>uv</code> 的唤起动作与 README 对 PNG 的引用，它们不在渲染这条主线上。</p>
+    </section>
+
+    <section id="catalog">
+      <h2>07 · 十二个场景怎么分给两个引擎</h2>
+      <p><strong>分法只有一条：图有明确的结构就交给 Graphviz，图先有语义再谈布局就交给 D2。</strong>集群、谱系、状态机、构建顺序这类图，节点关系本身就是全部信息，Graphviz 的三种布局正好一一对应；时序、容器、决策树、组织归属这类图，读者要先看懂「这是什么关系」，D2 用声明式的语义把这件事写在图源里。下表是 <code>catalog.json</code> 里十二个场景的原样清单。</p>
+      <div class="table-scroll" tabindex="0" aria-label="可横向滚动的场景目录表">
+        <table>
+          <thead><tr><th>场景</th><th>用途</th><th>图示家族</th><th>引擎与布局</th><th>它回答的问题</th></tr></thead>
+          <tbody>
+            <tr><td><code>architecture</code></td><td>服务架构</td><td>集群图</td><td>Graphviz <code>dot</code></td><td>边缘信号怎么变成科学产品</td></tr>
+            <tr><td><code>knowledge</code></td><td>知识地图</td><td>自由图</td><td>Graphviz <code>neato</code></td><td>概念之间怎么互相引用</td></tr>
+            <tr><td><code>incident</code></td><td>事故响应</td><td>流程图</td><td>D2</td><td>哪些动作能把服务救回来</td></tr>
+            <tr><td><code>data-lineage</code></td><td>数据治理</td><td>谱系</td><td>Graphviz <code>dot</code></td><td>每个分析字段源自哪里</td></tr>
+            <tr><td><code>state-machine</code></td><td>协议设计</td><td>状态机</td><td>Graphviz <code>dot</code></td><td>失败时哪些迁移合法</td></tr>
+            <tr><td><code>radial-ontology</code></td><td>领域建模</td><td>放射层级</td><td>Graphviz <code>twopi</code></td><td>本体怎么分叉又重新连上</td></tr>
+            <tr><td><code>build-pipeline</code></td><td>交付工程</td><td>DAG</td><td>Graphviz <code>dot</code></td><td>哪些任务卡住多平台发布</td></tr>
+            <tr><td><code>sequence</code></td><td>分布式追踪</td><td>时序</td><td>D2</td><td>一次结账跨过哪些服务</td></tr>
+            <tr><td><code>platform</code></td><td>平台架构</td><td>容器架构</td><td>D2</td><td>租户在控制面与数据面怎么隔离</td></tr>
+            <tr><td><code>decision</code></td><td>渲染路由</td><td>决策树</td><td>D2</td><td>该由哪个后端产出这张图</td></tr>
+            <tr><td><code>ownership</code></td><td>团队拓扑</td><td>归属图</td><td>D2</td><td>谁拥有服务、数据与运营结果</td></tr>
+            <tr><td><code>event-storm</code></td><td>领域发现</td><td>事件风暴</td><td>D2</td><td>命令、事件、策略与读模型怎么连</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="annotation-row">
+        <div class="annotation-main">
+          <p>Graphviz 拿走六个、D2 拿走六个，比例是刻意对半的：这个仓库想回答的问题不是「哪个引擎更好」，而是「同一类图交给谁更省事」。所以两边的场景不重复——没有一个家族同时出现在两个引擎下，读者对照时不会陷入选择题。</p>
+          <p>仓库里另有一份 <code>docs/architecture-infographic</code>，用 TeX 画了一张关于这条流水线的信息图（PDF、SVG、PNG 各一份）。它不在渲染器的产出台账里：渲染器只写 <code>out/</code>，这份 TeX 的编译命令记在旁边的 <code>render.json</code> 中，仓库里没有再生成它的脚本<span class="badge">推断</span>。</p>
+        </div>
+        <aside class="sidenote" id="note-docs" role="note"><span class="note-label">07 · 两套产物，两条来路</span><code>out/</code> 里的十二张图由 <code>scripts/render.py</code> 生成，可随时重跑；<code>docs/</code> 下那张信息图是单独编译的 TeX 产物，重跑渲染器不会碰它。两者讲的是同一条流水线，但来路不同。</aside>
+      </div>
+    </section>
+
+    <section id="tradeoffs">
+      <h2>08 · 五个已经做出的取舍</h2>
+      <div class="table-scroll" tabindex="0" aria-label="可横向滚动的取舍表">
+        <table>
+          <thead><tr><th>取舍</th><th>换来什么</th><th>代价</th></tr></thead>
+          <tbody>
+            <tr><td>布局全部外包给外部引擎</td><td>仓库零算法依赖，Python 侧只引 <code>pillow</code> 一个包</td><td>缺装 <code>dot</code> / <code>neato</code> / <code>twopi</code> / <code>d2</code> / <code>rsvg-convert</code> 任何一个都跑不起来</td></tr>
+            <tr><td>目录与渲染器各存一份场景清单</td><td>跑之前就能发现两边没对齐，不会渲染到一半才发现少了场景</td><td>加一个场景要同时改 <code>catalog.json</code>、<code>sources/</code> 和渲染器清单三处</td></tr>
+            <tr><td>像素阈值写死在代码里</td><td>不用配置文件，一条命令的产出质量可预期</td><td>换一种留白很多的图型，5% / 3% / 1500 这组经验值可能误伤</td></tr>
+            <tr><td>产物先落盘、验收在后</td><td>栅格化和验收解耦，PNG 可以直接拿去比对</td><td>验收失败的 PNG 已经躺在 <code>out/</code> 里，渲染器不回滚，要等下次重跑才被覆盖</td></tr>
+            <tr><td>D2 输出靠正则剥背景</td><td>一行替换就得到透明底，不用改 D2 的主题配置</td><td>D2 升级后背景矩形的写法一变，渲染器会主动退出而不是画出脏图</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="technical-note">
+        <summary>展开：三道像素阈值各在防什么</summary>
+        <p>透明面积 ≥ 5% 防「栅格化时被垫了底色」；可见面积 ≥ 3% 防「图被渲染成一张空画布」；彩色像素 ≥ 1500 防「只剩灰色轮廓、配色丢了」。三项都从 PNG 的像素直方图里算出来，不依赖引擎自报。</p>
+      </details>
+    </section>
+
+    <footer class="footnotes" aria-label="脚注">
+      <p>本页由 code2arch 于 2026-08-29 基于提交 <code>2b30c21</code> 生成，架构事实取自 <code>scripts/render.py</code>、<code>catalog.json</code>、<code>sources/</code> 的十二份图源与 <code>out/</code> 产物，关键结论均有代码与产物两处依据。</p>
+      <p>本仓库没有 <code>docs/design/</code> 特性文档，也没有 <code>docs/spec/</code> 规范目录，所以功能特性没有挂 F-NNN 链接、页脚也不设规范出口——缺口记在这里，不造死链。</p>
+      <p>代码演进后再生成：更新到最新提交后重跑 code2arch，图与正文一起更新；若引擎版本变了，先看第 08 节最后一条取舍。</p>
+    </footer>
+<script data-doc-motion-runtime>
+/* 固定动效运行时 · templates/motion-runtime.js
+ * 契约：references/motion-contract.md。整个文件原样嵌入页面末尾的
+ * data-doc-motion-runtime 脚本块；审计按 SHA-256 核对，任何改动只能
+ * 落在本文件，页面级扩展写进 script[data-doc-motion-extension] 块并走例外条款。
+ * 依赖 <head> 首个脚本已声明 window.__docErrors / window.__docReady=false。
+ * 约束：vanilla ES2020；不用定时循环、不克隆节点、不注入标记文本、不发网络请求。 */
+(() => {
+  'use strict';
+  const doc = document, root = doc.documentElement;
+  const params = new URLSearchParams(location.search);
+  const wanted = params.get('motion');
+  const MODE = wanted === 'static' ? 'static' : wanted === 'flow' ? 'flow' : 'auto';
+  root.dataset.motion = MODE;
+  const STATIC = MODE === 'static';
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const AUTOPLAY = !STATIC && !REDUCED;             // 进场 / 逐步点亮是否自动播放
+  const PARTICLES = !STATIC && (MODE === 'flow' || !REDUCED);   // ?motion=flow 强制粒子
+  const FLOW_MS = 3200;                              // 全图同周期，只错相位（唯一字面量）
+  const $ = (sel, el = doc) => [...el.querySelectorAll(sel)];
+  const errors = window.__docErrors || (window.__docErrors = []);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  let ok = false;
+
+  try {
+    /* ---- 逐步点亮：render 只画状态，seek 先停表再画，play 走 tick 链 ---- */
+    const timers = new WeakMap();                    // 每图一个待执行计时器
+    const seqs = $('figure.seq');
+    const stepsOf = fig => $('.step', fig);
+    const say = (fig, text) => {
+      const hint = fig.dataset.hint ? doc.getElementById(fig.dataset.hint) : null;
+      if (hint) hint.textContent = text;
+    };
+    const label = (fig, k) => {
+      const steps = stepsOf(fig), N = steps.length;
+      if (k <= 0) return `共 ${N} 步`;
+      if (k >= N) return `全部 ${N} 步`;
+      return `第 ${k} / ${N} 步：${(steps[k - 1].getAttribute('aria-label') || '').trim()}`;
+    };
+    const dwell = step => {
+      const chars = (step.getAttribute('aria-label') || '').replace(/\s/g, '').length;
+      return Math.max(550, Math.min(1500, 550 + chars * 70));
+    };
+    const stop = fig => { clearTimeout(timers.get(fig)); timers.delete(fig); };
+    const render = (fig, n) => {
+      const steps = stepsOf(fig), N = steps.length, k = Math.max(0, Math.min(Number(n) || 0, N));
+      steps.forEach((s, i) => {
+        s.classList.toggle('done', k >= N || i < k - 1);
+        s.classList.toggle('cur', k < N && i === k - 1);
+      });
+      fig.classList.toggle('ended', k >= N);
+      fig.dataset.n = String(k);
+      fig.dataset.frame = STATIC ? 'static' : k <= 0 ? 'start' : k >= N ? 'end' : 'step';
+      return k;
+    };
+    const seek = (fig, n, user) => {                 // user=true：读者动作，写提示行
+      stop(fig);
+      const k = render(fig, n);
+      if (user) say(fig, label(fig, k));
+      return k;
+    };
+    const finishSeq = fig => { const k = seek(fig, stepsOf(fig).length); say(fig, label(fig, k)); };
+    const play = fig => {
+      stop(fig);
+      const steps = stepsOf(fig);
+      if (!steps.length) return;
+      render(fig, 0);
+      const tick = () => {
+        timers.delete(fig);
+        if (doc.visibilityState === 'hidden') return;          // 标签页隐藏即停，不追帧
+        const k = render(fig, Number(fig.dataset.n) + 1);
+        if (k >= steps.length) { say(fig, label(fig, k)); return; }
+        timers.set(fig, setTimeout(tick, dwell(steps[k - 1])));
+      };
+      timers.set(fig, setTimeout(tick, 340));                   // 首拍 = 进场跨度 240 + 100
+    };
+    seqs.forEach(fig => {
+      if (!fig.hasAttribute('tabindex')) fig.setAttribute('tabindex', '0');
+      if (!fig.hasAttribute('role')) fig.setAttribute('role', 'group');
+      const steps = stepsOf(fig);
+      steps.forEach((s, i) => {
+        ['mouseenter', 'focus'].forEach(ev => s.addEventListener(ev, () => s.classList.add('focus')));
+        ['mouseleave', 'blur'].forEach(ev => s.addEventListener(ev, () => s.classList.remove('focus')));
+        s.addEventListener('click', () => seek(fig, i + 1, true));
+      });
+      fig.addEventListener('keydown', e => {
+        const n = Number(fig.dataset.n) || 0;
+        const map = { ArrowRight: n + 1, ArrowLeft: n - 1, Home: 0, End: steps.length };
+        if (!Object.prototype.hasOwnProperty.call(map, e.key)) return;
+        e.preventDefault();
+        seek(fig, map[e.key], true);
+      });
+      const replay = fig.querySelector('.replay');
+      if (replay) replay.addEventListener('click', () => {
+        if (AUTOPLAY) { play(fig); return; }
+        seek(fig, 0, true);
+        say(fig, `系统已减少动效：用 ← / → 逐步查看（共 ${steps.length} 步）`);
+      });
+      if (AUTOPLAY) render(fig, 0);
+      else {
+        finishSeq(fig);
+        if (REDUCED && !STATIC) say(fig, `${label(fig, steps.length)} · 系统已减少动效，用 ← / → 逐步查看`);
+      }
+    });
+
+    /* ---- 边 draw-in：起笔前藏箭头并把 dash 设成路径全长，画完复位 inline dash ---- */
+    const anims = $('figure.anim');
+    const drawEdges = fig => $('path.edge.draw', fig);
+    const drawers = new WeakMap();
+    const finishEdge = p => {
+      p.classList.add('drawn');
+      if (p.dataset.marker && !p.getAttribute('marker-end')) p.setAttribute('marker-end', p.dataset.marker);
+      p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; p.style.transition = '';
+    };
+    const armEdge = p => {
+      const marker = p.getAttribute('marker-end');
+      if (marker && !p.dataset.marker) p.dataset.marker = marker;
+      p.removeAttribute('marker-end');                          // 箭头延迟落地
+      const len = p.getTotalLength();
+      p.style.transition = 'none';                              // 设初值时不触发过渡
+      p.style.strokeDasharray = String(len); p.style.strokeDashoffset = String(len);
+      void p.getBoundingClientRect();
+      p.style.transition = '';
+      let done = false;
+      const finish = () => { if (!done) { done = true; finishEdge(p); } };
+      p.addEventListener('transitionend', e => { if (e.propertyName === 'stroke-dashoffset') finish(); });
+      drawers.set(p, () => requestAnimationFrame(() => {
+        const cs = getComputedStyle(p);
+        const total = (parseFloat(cs.transitionDelay) || 0) + (parseFloat(cs.transitionDuration) || 0);
+        p.style.strokeDashoffset = '0';
+        setTimeout(finish, total * 1000 + 250);                 // transitionend 未触发时的收尾
+      }));
+    };
+    const reveal = fig => { fig.classList.add('in-view'); drawEdges(fig).forEach(p => { const go = drawers.get(p); if (go) go(); }); };
+    const settle = fig => { fig.classList.add('in-view'); drawEdges(fig).forEach(finishEdge); if (STATIC) fig.dataset.frame = 'static'; };
+
+    /* ---- 进场触发（一次）：IntersectionObserver，触发后 unobserve ---- */
+    if (AUTOPLAY) {
+      anims.forEach(fig => drawEdges(fig).forEach(armEdge));
+      const io = new IntersectionObserver(entries => entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        if (entry.target.matches('figure.anim')) reveal(entry.target);
+        if (entry.target.matches('figure.seq')) play(entry.target);
+      }), { rootMargin: '0px 0px -15% 0px' });
+      anims.forEach(fig => io.observe(fig));
+      seqs.forEach(fig => io.observe(fig));
+    } else {
+      anims.forEach(settle);
+    }
+
+    /* ---- 焦点降噪：压暗其余（.dim），不是只加亮邻居 ---- */
+    anims.forEach(fig => {
+      const nodes = $('[data-node]', fig);
+      if (nodes.length < 2) return;
+      const edges = $('[data-from][data-to]', fig);
+      const set = (id, on) => {
+        fig.classList.toggle('hl', on);
+        const near = new Set([id]);
+        edges.forEach(e => { if (e.dataset.from === id) near.add(e.dataset.to); if (e.dataset.to === id) near.add(e.dataset.from); });
+        nodes.forEach(n => n.classList.toggle('dim', on && !near.has(n.dataset.node)));
+        edges.forEach(e => {
+          const hit = on && (e.dataset.from === id || e.dataset.to === id);
+          e.classList.toggle('hl', hit); e.classList.toggle('dim', on && !hit);
+        });
+      };
+      nodes.forEach(n => {
+        if (!n.hasAttribute('tabindex')) n.setAttribute('tabindex', '0');
+        ['mouseenter', 'focus'].forEach(ev => n.addEventListener(ev, () => set(n.dataset.node, true)));
+        ['mouseleave', 'blur'].forEach(ev => n.addEventListener(ev, () => set(n.dataset.node, false)));
+      });
+    });
+
+    /* ---- 图文联动：click / Enter 滚到讲它的段落并高亮 1.2s ---- */
+    $('[data-explains]').forEach(n => {
+      if (!n.hasAttribute('tabindex')) n.setAttribute('tabindex', '0');
+      const go = () => {
+        const target = doc.getElementById(n.dataset.explains);
+        if (!target) return;
+        target.scrollIntoView({ behavior: AUTOPLAY ? 'smooth' : 'auto', block: 'center' });
+        target.classList.add('flash');
+        setTimeout(() => target.classList.remove('flash'), 1200);
+      };
+      n.addEventListener('click', go);
+      n.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+    });
+
+    /* ---- 谱系聚焦：图例按钮 hover / focus 临时、click 固定、Escape 恢复 ---- */
+    $('figure').filter(fig => fig.querySelector('[data-lineage-focus]')).forEach(fig => {
+      const keys = $('[data-lineage-focus]', fig);
+      let pinned = '';
+      const show = id => {
+        $('[data-lineage]', fig).forEach(el => {          // 每次重查，让后生成的粒子也参与
+          el.classList.toggle('is-active', Boolean(id) && el.dataset.lineage === id);
+          el.classList.toggle('dim', Boolean(id) && el.dataset.lineage !== id);
+        });
+        keys.forEach(k => k.setAttribute('aria-pressed', String(Boolean(pinned) && k.dataset.lineageFocus === pinned)));
+      };
+      keys.forEach(k => {
+        const id = k.dataset.lineageFocus;
+        ['mouseenter', 'focus'].forEach(ev => k.addEventListener(ev, () => { if (!pinned) show(id); }));
+        ['mouseleave', 'blur'].forEach(ev => k.addEventListener(ev, () => { if (!pinned) show(''); }));
+        k.addEventListener('click', () => { pinned = pinned === id ? '' : id; show(pinned); });
+      });
+      fig.addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = ''; show(''); } });
+    });
+
+    /* ---- 流粒子：沿 [data-flow] 轨道循环，全图同周期只错相位；粒子 aria-hidden ---- */
+    const flowState = [];
+    if (PARTICLES) {
+      const groups = new Map();
+      $('[data-flow]').filter(p => p.dataset.flowAuto !== 'false' && typeof p.getTotalLength === 'function').forEach(p => {
+        const key = p.closest('figure') || p.ownerSVGElement;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(p);
+      });
+      const dots = [];
+      groups.forEach((paths, key) => paths.forEach((p, i) => {
+        const dot = doc.createElementNS(SVG_NS, 'circle');
+        dot.setAttribute('r', '3.5'); dot.setAttribute('class', 'flow-dot'); dot.setAttribute('aria-hidden', 'true');
+        if (p.dataset.lineage) dot.dataset.lineage = p.dataset.lineage;
+        if (p.dataset.flowColor) dot.style.fill = p.dataset.flowColor;
+        p.parentNode.appendChild(dot);
+        const phase = (i * FLOW_MS) / paths.length;
+        dots.push({ p, dot, len: p.getTotalLength(), phase });
+        flowState.push({ fig: key && key.id ? key.id : '', dur: FLOW_MS, phase });
+      }));
+      if (dots.length) {
+        const t0 = performance.now();
+        const frame = t => {
+          dots.forEach(d => {
+            const pt = d.p.getPointAtLength((((t - t0 + d.phase) % FLOW_MS) / FLOW_MS) * d.len);
+            d.dot.setAttribute('cx', pt.x.toFixed(2)); d.dot.setAttribute('cy', pt.y.toFixed(2));
+          });
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+    }
+
+    /* ---- 插图查看器：原生 <dialog>，移动 SVG 节点而不克隆，关闭时归还 ---- */
+    const el = (tag, attrs, ...kids) => {
+      const node = doc.createElement(tag);
+      Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+      node.append(...kids);
+      return node;
+    };
+    let dialog = doc.querySelector('dialog.figure-lightbox');
+    if (!dialog) {
+      dialog = el('dialog', { class: 'figure-lightbox', 'aria-label': '插图查看器' },
+        el('div', { class: 'zoom-shell' },
+          el('div', { class: 'zoom-toolbar' },
+            el('span', { class: 'zoom-caption' }),
+            el('div', { class: 'zoom-controls', 'aria-label': '缩放控制' },
+              el('button', { type: 'button', 'data-zoom-out': '', 'aria-label': '缩小' }, '−'),
+              el('button', { type: 'button', 'data-zoom-fit': '', 'aria-label': '适合窗口' }, '适配'),
+              el('button', { type: 'button', 'data-zoom-actual': '', 'aria-label': '恢复百分之百' }, '100%'),
+              el('button', { type: 'button', 'data-zoom-in': '', 'aria-label': '放大' }, '＋'),
+              el('button', { type: 'button', class: 'zoom-close', 'data-zoom-close': '', 'aria-label': '关闭' }, '×'))),
+          el('div', { class: 'zoom-viewport', tabindex: '0', 'aria-label': '可滚动的放大插图' },
+            el('div', { class: 'zoom-stage' }))));
+      doc.body.append(dialog);
+    }
+    const viewport = dialog.querySelector('.zoom-viewport');
+    const stage = dialog.querySelector('.zoom-stage');
+    const caption = dialog.querySelector('.zoom-caption');
+    const captionOf = figure => {
+      const cap = figure.querySelector('figcaption');
+      if (!cap) return '插图';
+      return [...cap.childNodes]
+        .filter(n => !(n.nodeType === 1 && n.matches('.figure-controls, .replay, .step-hint')))
+        .map(n => n.textContent).join('').trim() || '插图';
+    };
+    let active = null, placeholder = null, previousFocus = null, originalStyle = null;
+    let baseWidth = 0, baseHeight = 0, scale = 1;
+    const clamp = value => Math.min(4, Math.max(.25, value));
+    const zoomTo = value => {
+      if (!active) return;
+      scale = clamp(value);
+      const width = baseWidth * scale, height = baseHeight * scale;
+      active.style.width = `${width}px`; active.style.height = `${height}px`;
+      stage.style.width = `${Math.max(viewport.clientWidth, width + 48)}px`;
+      stage.style.height = `${Math.max(viewport.clientHeight, height + 48)}px`;
+      dialog.dataset.scale = scale.toFixed(3);
+    };
+    const fit = () => zoomTo(Math.min((viewport.clientWidth - 48) / baseWidth, (viewport.clientHeight - 48) / baseHeight));
+    const close = () => {
+      if (!active) return;
+      placeholder.replaceWith(active);
+      if (originalStyle === null) active.removeAttribute('style'); else active.setAttribute('style', originalStyle);
+      active = null; placeholder = null; doc.body.classList.remove('figure-zoom-open');
+      if (dialog.open) dialog.close();
+      if (previousFocus) previousFocus.focus();
+    };
+    const open = figure => {
+      const media = figure && figure.querySelector('svg, img');
+      if (!media) return false;
+      if (active) close();
+      previousFocus = doc.activeElement;
+      const box = media.getBoundingClientRect();
+      const viewBox = media.tagName.toLowerCase() === 'svg' ? media.viewBox.baseVal : null;
+      baseWidth = (viewBox && viewBox.width) || media.naturalWidth || box.width;
+      baseHeight = (viewBox && viewBox.height) || media.naturalHeight || box.height;
+      originalStyle = media.getAttribute('style');
+      placeholder = el('div', { class: 'zoom-placeholder', 'aria-hidden': 'true' });
+      placeholder.style.height = `${box.height}px`;
+      media.replaceWith(placeholder); active = media; stage.append(media);
+      caption.textContent = captionOf(figure);
+      doc.body.classList.add('figure-zoom-open');
+      dialog.showModal();
+      requestAnimationFrame(() => { fit(); viewport.scrollTo(0, 0); viewport.focus(); });
+      return true;
+    };
+    const zoomables = $('figure').filter(figure => figure.querySelector('svg') && !dialog.contains(figure));
+    zoomables.forEach((figure, index) => {
+      figure.classList.add('zoomable');
+      const button = el('button', { type: 'button', class: 'figure-zoom-trigger', 'aria-label': `放大查看图 ${index + 1}`, title: `放大查看图 ${index + 1}` });
+      button.addEventListener('click', () => open(figure));
+      figure.append(button);
+    });
+    dialog.querySelector('[data-zoom-out]').addEventListener('click', () => zoomTo(scale / 1.25));
+    dialog.querySelector('[data-zoom-in]').addEventListener('click', () => zoomTo(scale * 1.25));
+    dialog.querySelector('[data-zoom-actual]').addEventListener('click', () => zoomTo(1));
+    dialog.querySelector('[data-zoom-fit]').addEventListener('click', fit);
+    dialog.querySelector('[data-zoom-close]').addEventListener('click', close);
+    dialog.addEventListener('cancel', e => { e.preventDefault(); close(); });
+    dialog.addEventListener('click', e => { if (e.target === dialog) close(); });
+    viewport.addEventListener('wheel', e => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault(); zoomTo(scale * (e.deltaY < 0 ? 1.15 : 1 / 1.15));
+    }, { passive: false });
+    doc.addEventListener('keydown', e => {
+      if (!dialog.open) return;
+      if (e.key === '+' || e.key === '=') zoomTo(scale * 1.25);
+      else if (e.key === '-') zoomTo(scale / 1.25);
+      else if (e.key === '0') zoomTo(1);
+      else if (e.key.toLowerCase() === 'f') fit();
+    });
+    window.addEventListener('resize', () => { if (dialog.open) fit(); });
+    window.__figureZoom = {
+      open: index => open(zoomables[index]), close, fit, actual: () => zoomTo(1), scale: zoomTo,
+      state: () => ({ open: dialog.open, scale, hasFigure: Boolean(active) }),
+    };
+
+    /* ---- 打印、页面隐藏与取证探针（不产生 UI） ---- */
+    window.addEventListener('beforeprint', () => { anims.forEach(settle); seqs.forEach(finishSeq); });
+    doc.addEventListener('visibilitychange', () => { if (doc.visibilityState === 'hidden') seqs.forEach(stop); });
+    window.__seqSeek = (id, n) => {
+      const fig = doc.getElementById(String(id));
+      return fig && fig.matches('figure.seq') ? seek(fig, Number(n), true) : -1;
+    };
+    window.__flowState = () => flowState.map(s => ({ fig: s.fig, dur: s.dur, phase: s.phase }));
+    ok = true;
+  } catch (error) {
+    errors.push(`motion-runtime: ${String(error && error.stack || error)}`);
+  }
+
+  /* 失效安全：只有全部绑定成功才允许 CSS 隐藏初态；失败时完整静态源保持可见。 */
+  if (ok) {
+    root.classList.add('motion-ready');
+    window.__docReady = true;
+  }
+})();
+
+  </script>
+</body>
+</html>
