@@ -75,7 +75,7 @@
   "provenance": {
     "project_readme": "README.md",
     "catalog": "catalog.json",
-    "render_script": "scripts/render.py",
+    "render_script": "tools/render.py",
     "source_files": "sources/*.dot, sources/*.d2"
   },
   "rendered_at": "2026-08-24T17:20:51.337934+00:00"

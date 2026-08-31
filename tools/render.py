@@ -10,7 +10,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "out"
-SOURCES = ROOT / "sources"
+SOURCES = ROOT / "src"
 CASES = [
     ("architecture", ["dot", "-Tsvg", str(SOURCES / "architecture.dot"), "-o"]),
     ("knowledge", ["neato", "-Tsvg", str(SOURCES / "knowledge.dot"), "-o"]),

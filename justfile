@@ -6,7 +6,7 @@ default: build
 # outputs: transparency, content, chroma).
 build:
     uv sync
-    uv run python scripts/render.py
+    uv run python tools/render.py
 
 # The render gate is the test gate.
 test: build

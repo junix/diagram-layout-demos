@@ -14,7 +14,7 @@ Automatic layout as a rendering capability across twelve reference scenarios: Gr
 
 ```bash
 uv sync
-uv run python scripts/render.py
+uv run python tools/render.py
 ```
 
 The renderer checks all external binaries, compiles DSL source to SVG, rasterizes with a transparent background, and rejects PNGs without meaningful alpha, content, and color.
