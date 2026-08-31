@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>diagram-layout-demos — gallery</title>
+<style>
+:root{
+  --bg:#fbfaf8; --panel:#fff; --ink:#16181d; --muted:#5f6570; --faint:#8b929e;
+  --line:#e3e1dc; --accent:#2f6f5e; --chip:#eef1ef; --code:#f6f5f2;
+  --shadow:0 1px 2px rgba(20,22,26,.05),0 8px 24px -12px rgba(20,22,26,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme=dark]{
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:56px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:40px}
+h1{margin:0;font-size:30px;letter-spacing:-.02em;font-weight:650}
+.tagline{margin:10px 0 0;color:var(--muted);max-width:70ch;font-size:16px}
+.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.pill b{color:var(--ink);font-weight:600}
+.grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.shot{margin:0;padding:16px;display:flex;flex-direction:column;gap:10px;
+  align-items:center;justify-content:center;height:250px;border-bottom:1px solid var(--line)}
+.shot.tall{height:400px}
+.shot.checker{background-color:#f2f1ee;background-image:
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%),
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px}
+.shot.dark{background:#11151a}
+.shot.light{background:#fff}
+.shot img,.shot video{max-width:100%;max-height:100%;width:auto;height:auto;
+  object-fit:contain;display:block;border-radius:3px}
+.shot.multi img{max-height:calc(50% - 5px)}
+.shot .missing{color:var(--faint);font-size:13px;font-style:italic;text-align:center}
+.body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.idx{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint);
+  letter-spacing:.09em;text-transform:uppercase}
+h2{margin:0;font-size:17px;font-weight:620;letter-spacing:-.01em}
+.blurb{margin:0;color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border-radius:5px;padding:4px 7px}
+details{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--accent);list-style:none;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details[open] summary::before{content:"▾ "}
+pre{margin:12px 0 0;background:var(--code);border:1px solid var(--line);border-radius:8px;
+  padding:14px;overflow-x:auto;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+  max-height:440px;overflow-y:auto}
+pre .c{color:var(--faint);font-style:italic}
+pre .s{color:var(--accent)}
+pre .n{color:#b1784f}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) pre .n{color:#d8a06a}}
+:root[data-theme=dark] pre .n{color:#d8a06a}
+.extra{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint)}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+  color:var(--faint);font-size:13px}
+footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
+  font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>diagram-layout-demos</h1>
+    <p class="tagline">Automatic layout treated as a rendering capability: Graphviz takes the clustered, radial, free-form, state, lineage and DAG topologies; D2 takes the modern semantic diagram DSLs.</p>
+    <div class="meta"><span class="pill">Graphviz + D2</span><span class="pill"><b>12</b> demos</span><span class="pill"><b>12</b> rendered</span></div>
+  </header>
+  <main class="grid">
+      <article class="card">
+        <figure class="shot light"><img src="out/architecture.svg" alt="Architecture" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">01 · clustered graph</div>
+          <h2>Architecture</h2>
+          <p class="blurb">How do edge signals become science products?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">architecture</span><span class="tag">clusters</span><span class="tag">advanced</span></div>
+          <details><summary>src/architecture.dot</summary><pre><code>digraph Observatory {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, rankdir=LR, pad=<span class="s">&quot;0.45&quot;</span>, nodesep=<span class="s">&quot;0.52&quot;</span>, ranksep=<span class="s">&quot;0.95&quot;</span>, splines=spline, fontname=<span class="s">&quot;Avenir Next&quot;</span>, label=<span class="s">&quot;REAL-TIME OCEAN OBSERVATORY&quot;</span>, labelloc=t, fontsize=<span class="n">25</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>];
+  node [shape=rect, style=<span class="s">&quot;rounded,filled&quot;</span>, fillcolor=<span class="s">&quot;#14243ccc&quot;</span>, color=<span class="s">&quot;#6e91a9&quot;</span>, penwidth=<span class="n">1.5</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, fontcolor=<span class="s">&quot;#e0eef7&quot;</span>, margin=<span class="s">&quot;0.24,0.14&quot;</span>];
+  edge [color=<span class="s">&quot;#6f91aa&quot;</span>, penwidth=<span class="n">1.5</span>, arrowsize=<span class="n">0.7</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, fontcolor=<span class="s">&quot;#9db5c6&quot;</span>, fontsize=<span class="n">10</span>];
+
+  subgraph cluster_edge {
+    label=<span class="s">&quot;FIELD / EDGE&quot;</span>; color=<span class="s">&quot;#3a7280&quot;</span>; fontcolor=<span class="s">&quot;#71d5ca&quot;</span>; style=<span class="s">&quot;rounded,dashed&quot;</span>;
+    buoys [label=<span class="s">&quot;Sensor Buoys\n18 regions&quot;</span>, fillcolor=<span class="s">&quot;#163c42cc&quot;</span>, color=<span class="s">&quot;#54d6c6&quot;</span>];
+    gliders [label=<span class="s">&quot;Autonomous Gliders\n6 transects&quot;</span>, fillcolor=<span class="s">&quot;#163c42cc&quot;</span>, color=<span class="s">&quot;#54d6c6&quot;</span>];
+    satellite [label=<span class="s">&quot;Satellite Relay\nL-band&quot;</span>, fillcolor=<span class="s">&quot;#163c42cc&quot;</span>, color=<span class="s">&quot;#54d6c6&quot;</span>];
+  }
+  subgraph cluster_stream {
+    label=<span class="s">&quot;STREAM FABRIC&quot;</span>; color=<span class="s">&quot;#4d5f9a&quot;</span>; fontcolor=<span class="s">&quot;#91a5ff&quot;</span>; style=<span class="s">&quot;rounded,dashed&quot;</span>;
+    ingest [label=<span class="s">&quot;Ingest Gateway\nvalidation + clock&quot;</span>, fillcolor=<span class="s">&quot;#222c55cc&quot;</span>, color=<span class="s">&quot;#7b9cff&quot;</span>];
+    bus [label=<span class="s">&quot;Event Current\npartitioned log&quot;</span>, shape=cylinder, fillcolor=<span class="s">&quot;#222c55cc&quot;</span>, color=<span class="s">&quot;#7b9cff&quot;</span>];
+    quality [label=<span class="s">&quot;Quality Engine\nphysics constraints&quot;</span>, fillcolor=<span class="s">&quot;#222c55cc&quot;</span>, color=<span class="s">&quot;#7b9cff&quot;</span>];
+  }
+  subgraph cluster_products {
+    label=<span class="s">&quot;SCIENCE PRODUCTS&quot;</span>; color=<span class="s">&quot;#95536f&quot;</span>; fontcolor=<span class="s">&quot;#ff8ba5&quot;</span>; style=<span class="s">&quot;rounded,dashed&quot;</span>;
+    lake [label=<span class="s">&quot;Observation Lake\nversioned arrays&quot;</span>, shape=cylinder, fillcolor=<span class="s">&quot;#49243acc&quot;</span>, color=<span class="s">&quot;#ff6f91&quot;</span>];
+    model [label=<span class="s">&quot;Assimilation Model\n4D ensemble&quot;</span>, fillcolor=<span class="s">&quot;#49243acc&quot;</span>, color=<span class="s">&quot;#ff6f91&quot;</span>];
+    portal [label=<span class="s">&quot;Research Portal\nmap + notebook&quot;</span>, fillcolor=<span class="s">&quot;#49243acc&quot;</span>, color=<span class="s">&quot;#ff6f91&quot;</span>];
+  }
+  alert [label=<span class="s">&quot;Coastal Alerting\n&lt; 90 s&quot;</span>, fillcolor=<span class="s">&quot;#51431dcc&quot;</span>, color=<span class="s">&quot;#ffd166&quot;</span>, fontcolor=<span class="s">&quot;#fff0bd&quot;</span>];
+  buoys -&gt; ingest [label=<span class="s">&quot;acoustic&quot;</span>];
+  gliders -&gt; ingest [label=<span class="s">&quot;surfacing&quot;</span>];
+  satellite -&gt; ingest;
+  ingest -&gt; bus -&gt; quality;
+  quality -&gt; lake;
+  quality -&gt; alert [color=<span class="s">&quot;#ffd166&quot;</span>, penwidth=<span class="n">2.4</span>];
+  lake -&gt; model -&gt; portal;
+  model -&gt; alert [color=<span class="s">&quot;#ff9d79&quot;</span>, style=dashed];
+  portal -&gt; model [label=<span class="s">&quot;scenarios&quot;</span>, style=dashed, constraint=false];
+}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/build-pipeline.svg" alt="Build pipeline" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">02 · DAG</div>
+          <h2>Build pipeline</h2>
+          <p class="blurb">Which jobs gate a multi-platform release?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">ci</span><span class="tag">pipeline</span><span class="tag">advanced</span></div>
+          <details><summary>src/build-pipeline.dot</summary><pre><code>digraph Pipeline {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, rankdir=LR, pad=.<span class="n">45</span>, nodesep=.<span class="n">38</span>, ranksep=.<span class="n">62</span>, splines=ortho, label=<span class="s">&quot;MULTI-PLATFORM RELEASE PIPELINE&quot;</span>, labelloc=t, fontsize=<span class="n">26</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>];
+  node [shape=box,style=<span class="s">&quot;rounded,filled&quot;</span>,fillcolor=<span class="s">&quot;#172a43dd&quot;</span>,color=<span class="s">&quot;#7896ab&quot;</span>,fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>,fontname=<span class="s">&quot;Avenir Next&quot;</span>,margin=<span class="s">&quot;.18,.11&quot;</span>]; edge [color=<span class="s">&quot;#7896ab&quot;</span>,penwidth=<span class="n">1.5</span>,arrowsize=.<span class="n">65</span>];
+  commit [label=<span class="s">&quot;Commit\n+ contract diff&quot;</span>,fillcolor=<span class="s">&quot;#17433edd&quot;</span>,color=<span class="s">&quot;#54d6c6&quot;</span>];
+  lint [label=<span class="s">&quot;Lint + format&quot;</span>]; unit [label=<span class="s">&quot;Unit tests&quot;</span>]; contract [label=<span class="s">&quot;Cross-language\ncontract suite&quot;</span>]; linux [label=<span class="s">&quot;Linux x86\nbuild&quot;</span>]; mac [label=<span class="s">&quot;macOS arm64\nbuild&quot;</span>]; web [label=<span class="s">&quot;Web bundle\nbuild&quot;</span>]; supply [label=<span class="s">&quot;SBOM + signing&quot;</span>]; staging [label=<span class="s">&quot;Staging smoke&quot;</span>]; canary [label=<span class="s">&quot;5% canary&quot;</span>,shape=diamond,fillcolor=<span class="s">&quot;#493d1cdd&quot;</span>,color=<span class="s">&quot;#ffd166&quot;</span>]; publish [label=<span class="s">&quot;Publish artifacts&quot;</span>,fillcolor=<span class="s">&quot;#4d2940dd&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>]; rollback [label=<span class="s">&quot;Rollback +\nincident bundle&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>];
+  commit -&gt; {lint unit contract}; lint -&gt; {linux mac web}; unit -&gt; {linux mac web}; contract -&gt; {linux mac web}; {linux mac web} -&gt; supply -&gt; staging -&gt; canary; canary -&gt; publish [label=<span class="s">&quot;healthy&quot;</span>,color=<span class="s">&quot;#54d6c6&quot;</span>]; canary -&gt; rollback [label=<span class="s">&quot;regression&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>]; rollback -&gt; commit [style=dashed,constraint=false];
+}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/data-lineage.svg" alt="Data lineage" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">03 · lineage</div>
+          <h2>Data lineage</h2>
+          <p class="blurb">Where does each analytical field originate?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">data</span><span class="tag">provenance</span><span class="tag">advanced</span></div>
+          <details><summary>src/data-lineage.dot</summary><pre><code>digraph Lineage {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, rankdir=LR, pad=.<span class="n">45</span>, nodesep=.<span class="n">38</span>, ranksep=.<span class="n">75</span>, splines=ortho, label=<span class="s">&quot;ANALYTICS DATA LINEAGE&quot;</span>, labelloc=t, fontsize=<span class="n">26</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>];
+  node [shape=box, style=<span class="s">&quot;rounded,filled&quot;</span>, fillcolor=<span class="s">&quot;#162a43dd&quot;</span>, color=<span class="s">&quot;#7896ab&quot;</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, margin=<span class="s">&quot;.2,.12&quot;</span>];
+  edge [color=<span class="s">&quot;#7b9cffaa&quot;</span>, penwidth=<span class="n">1.6</span>, arrowsize=.<span class="n">7</span>, fontcolor=<span class="s">&quot;#aec1cf&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, fontsize=<span class="n">9</span>];
+  subgraph cluster_sources { label=<span class="s">&quot;SOURCES&quot;</span>; color=<span class="s">&quot;#54d6c6&quot;</span>; fontcolor=<span class="s">&quot;#54d6c6&quot;</span>; events [label=<span class="s">&quot;Product events\n2.4B/day&quot;</span>]; billing [label=<span class="s">&quot;Billing ledger\nappend-only&quot;</span>]; crm [label=<span class="s">&quot;Customer master\nSCD2&quot;</span>]; sensors [label=<span class="s">&quot;Edge telemetry\n18 regions&quot;</span>]; }
+  subgraph cluster_transform { label=<span class="s">&quot;TRANSFORM&quot;</span>; color=<span class="s">&quot;#7b9cff&quot;</span>; fontcolor=<span class="s">&quot;#7b9cff&quot;</span>; bronze [shape=cylinder,label=<span class="s">&quot;Bronze lake&quot;</span>]; identity [label=<span class="s">&quot;Identity graph&quot;</span>]; sessions [label=<span class="s">&quot;Sessionization&quot;</span>]; metrics [label=<span class="s">&quot;Metric contracts&quot;</span>]; quality [shape=diamond,label=<span class="s">&quot;Quality gates&quot;</span>]; }
+  subgraph cluster_products { label=<span class="s">&quot;PRODUCTS&quot;</span>; color=<span class="s">&quot;#ff6f91&quot;</span>; fontcolor=<span class="s">&quot;#ff6f91&quot;</span>; marts [shape=cylinder,label=<span class="s">&quot;Semantic marts&quot;</span>]; forecast [label=<span class="s">&quot;Demand forecast&quot;</span>]; exec [label=<span class="s">&quot;Executive scorecard&quot;</span>]; alerts [label=<span class="s">&quot;SLO alerting&quot;</span>]; }
+  {events billing crm sensors} -&gt; bronze; crm -&gt; identity; bronze -&gt; identity; bronze -&gt; sessions; identity -&gt; metrics; sessions -&gt; metrics; metrics -&gt; quality; quality -&gt; marts [label=<span class="s">&quot;certified&quot;</span>]; marts -&gt; {forecast exec alerts}; quality -&gt; alerts [color=<span class="s">&quot;#ffd166&quot;</span>,label=<span class="s">&quot;violation&quot;</span>];
+}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/decision.svg" alt="Decision" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">04 · decision tree</div>
+          <h2>Decision</h2>
+          <p class="blurb">Which backend should produce a requested visual?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">routing</span><span class="tag">decision</span><span class="tag">advanced</span></div>
+          <details><summary>src/decision.d2</summary><pre><code>direction: down
+request: Visual request { shape: oval }
+semantic: Has graph topology? { shape: diamond }
+temporal: Changes over time? { shape: diamond }
+spatial: Geospatial or <span class="n">3</span>D? { shape: diamond }
+grammar: Data maps to encodings? { shape: diamond }
+precision: Publication vector required? { shape: diamond }
+graphviz: Graphviz / D2
+manim: Manim
+three: PyVista / Three.js
+vega: Vega / ECharts / D3
+tikz: CeTZ / SVG
+matplotlib: Matplotlib / Makie
+request -&gt; semantic
+semantic -&gt; graphviz: yes
+semantic -&gt; temporal: no
+temporal -&gt; manim: yes
+temporal -&gt; spatial: no
+spatial -&gt; three: yes
+spatial -&gt; grammar: no
+grammar -&gt; vega: yes
+grammar -&gt; precision: no
+precision -&gt; tikz: yes
+precision -&gt; matplotlib: no
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/event-storm.svg" alt="Event storm" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">05 · event storm</div>
+          <h2>Event storm</h2>
+          <p class="blurb">How do commands, events, policies, and read models connect?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">ddd</span><span class="tag">events</span><span class="tag">advanced</span></div>
+          <details><summary>src/event-storm.d2</summary><pre><code>direction: right
+classes: {
+  command: { style.fill: <span class="s">&quot;#264a78&quot;</span>; style.stroke: <span class="s">&quot;#7b9cff&quot;</span> }
+  event: { style.fill: <span class="s">&quot;#6b3f16&quot;</span>; style.stroke: <span class="s">&quot;#ffad42&quot;</span> }
+  policy: { style.fill: <span class="s">&quot;#4d2940&quot;</span>; style.stroke: <span class="s">&quot;#ff6f91&quot;</span> }
+  read: { style.fill: <span class="s">&quot;#17433e&quot;</span>; style.stroke: <span class="s">&quot;#54d6c6&quot;</span> }
+}
+place: Place order { class: command }
+placed: Order placed { class: event }
+reserve: Reserve inventory { class: policy }
+reserved: Inventory reserved { class: event }
+authorize: Authorize payment { class: policy }
+authorized: Payment authorized { class: event }
+reject: Reject order { class: command }
+confirmed: Order confirmed { class: event }
+projection: Customer order view { class: read }
+warehouse: Warehouse queue { class: read }
+place -&gt; placed -&gt; reserve -&gt; reserved -&gt; authorize -&gt; authorized -&gt; confirmed
+reserve -&gt; reject: unavailable
+authorize -&gt; reject: declined
+placed -&gt; projection
+reserved -&gt; warehouse
+confirmed -&gt; projection
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/incident.svg" alt="Incident" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">06 · flowchart</div>
+          <h2>Incident</h2>
+          <p class="blurb">Which actions recover the service?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">operations</span><span class="tag">decision</span><span class="tag">advanced</span></div>
+          <details><summary>src/incident.d2</summary><pre><code>direction: right
+title: INCIDENT RESPONSE / <span class="n">14</span> MINUTES {
+  shape: text
+  style.font-size: <span class="n">30</span>
+  style.font-color: <span class="s">&quot;#ECF8FF&quot;</span>
+  near: top-center
+}
+
+classes: {
+  phase: { style.fill: <span class="s">&quot;#14243C&quot;</span>; style.stroke: <span class="s">&quot;#6688A0&quot;</span>; style.font-color: <span class="s">&quot;#E3F1F8&quot;</span>; style.border-radius: <span class="n">12</span>; style.stroke-width: <span class="n">2</span> }
+  signal: { style.fill: <span class="s">&quot;#173F3E&quot;</span>; style.stroke: <span class="s">&quot;#54D6C6&quot;</span>; style.font-color: <span class="s">&quot;#DFFFF8&quot;</span> }
+  choice: { shape: diamond; style.fill: <span class="s">&quot;#4B3E1B&quot;</span>; style.stroke: <span class="s">&quot;#FFD166&quot;</span>; style.font-color: <span class="s">&quot;#FFF2BD&quot;</span> }
+  action: { style.fill: <span class="s">&quot;#3D2842&quot;</span>; style.stroke: <span class="s">&quot;#D183FF&quot;</span>; style.font-color: <span class="s">&quot;#F5E6FF&quot;</span> }
+  resolved: { style.fill: <span class="s">&quot;#44243A&quot;</span>; style.stroke: <span class="s">&quot;#FF6F91&quot;</span>; style.font-color: <span class="s">&quot;#FFE7ED&quot;</span> }
+}
+
+observe: Telemetry Spike\n00:<span class="n">00</span> { class: signal; shape: hexagon }
+triage: Correlate Signals\n00:<span class="n">02</span> { class: phase }
+scope: Customer Impact?\n00:<span class="n">04</span> { class: choice }
+contain: Isolate Region\n00:<span class="n">06</span> { class: action }
+shadow_route: Shift to Shadow\n00:<span class="n">08</span> { class: action }
+verify: Golden Probes\n00:<span class="n">11</span> { class: phase }
+recover: Restore + Watch\n00:<span class="n">14</span> { class: resolved }
+false_alarm: Annotate Baseline { class: phase }
+
+observe -&gt; triage: page on-call { style.stroke: <span class="s">&quot;#54D6C6&quot;</span>; style.stroke-width: <span class="n">3</span> }
+triage -&gt; scope: join traces
+scope -&gt; contain: yes { style.stroke: <span class="s">&quot;#FFD166&quot;</span> }
+scope -&gt; false_alarm: no { style.stroke-dash: <span class="n">5</span> }
+contain -&gt; shadow_route: drain
+shadow_route -&gt; verify: replay
+verify -&gt; recover: SLO green { style.stroke: <span class="s">&quot;#FF6F91&quot;</span>; style.stroke-width: <span class="n">3</span> }
+false_alarm -&gt; verify: tune detector { style.stroke-dash: <span class="n">5</span> }
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/knowledge.svg" alt="Knowledge" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">07 · free graph</div>
+          <h2>Knowledge</h2>
+          <p class="blurb">How do living-system concepts cross-link?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">ontology</span><span class="tag">neato</span><span class="tag">advanced</span></div>
+          <details><summary>src/knowledge.dot</summary><pre><code>graph LivingSystems {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, layout=neato, overlap=false, splines=true, pad=<span class="s">&quot;0.55&quot;</span>, outputorder=edgesfirst, fontname=<span class="s">&quot;Avenir Next&quot;</span>, label=<span class="s">&quot;LIVING SYSTEMS KNOWLEDGE FIELD&quot;</span>, labelloc=t, fontsize=<span class="n">25</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>];
+  node [shape=circle, style=filled, fixedsize=true, width=<span class="n">1.15</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, fontsize=<span class="n">11</span>, fontcolor=<span class="s">&quot;#ecf8ff&quot;</span>, color=<span class="s">&quot;#9db4c4&quot;</span>, penwidth=<span class="n">1.4</span>, fillcolor=<span class="s">&quot;#172a43dd&quot;</span>];
+  edge [color=<span class="s">&quot;#7192a9aa&quot;</span>, penwidth=<span class="n">1.15</span>];
+  ecology [label=<span class="s">&quot;ECOLOGY&quot;</span>, width=<span class="n">1.65</span>, fillcolor=<span class="s">&quot;#17433edd&quot;</span>, color=<span class="s">&quot;#54d6c6&quot;</span>, fontsize=<span class="n">15</span>, pos=<span class="s">&quot;0,0!&quot;</span>];
+  climate [label=<span class="s">&quot;CLIMATE&quot;</span>, width=<span class="n">1.5</span>, fillcolor=<span class="s">&quot;#283664dd&quot;</span>, color=<span class="s">&quot;#7b9cff&quot;</span>, fontsize=<span class="n">14</span>, pos=<span class="s">&quot;3.4,1.7!&quot;</span>];
+  evolution [label=<span class="s">&quot;EVOLUTION&quot;</span>, width=<span class="n">1.5</span>, fillcolor=<span class="s">&quot;#4d2940dd&quot;</span>, color=<span class="s">&quot;#ff6f91&quot;</span>, fontsize=<span class="n">14</span>, pos=<span class="s">&quot;-3.3,1.9!&quot;</span>];
+  networks [label=<span class="s">&quot;NETWORKS&quot;</span>, width=<span class="n">1.5</span>, fillcolor=<span class="s">&quot;#493d1cdd&quot;</span>, color=<span class="s">&quot;#ffd166&quot;</span>, fontsize=<span class="n">14</span>, pos=<span class="s">&quot;0,-3.0!&quot;</span>];
+  soil [label=<span class="s">&quot;Soil&quot;</span>, pos=<span class="s">&quot;-1.8,-.4!&quot;</span>]; forest [label=<span class="s">&quot;Forest&quot;</span>, pos=<span class="s">&quot;-1.6,1.4!&quot;</span>]; ocean [label=<span class="s">&quot;Ocean&quot;</span>, pos=<span class="s">&quot;1.7,1.3!&quot;</span>]; atmosphere [label=<span class="s">&quot;Atmosphere&quot;</span>, pos=<span class="s">&quot;2.1,-.4!&quot;</span>];
+  genes [label=<span class="s">&quot;Genes&quot;</span>, pos=<span class="s">&quot;-4.7,3.5!&quot;</span>]; selection [label=<span class="s">&quot;Selection&quot;</span>, pos=<span class="s">&quot;-4.8,.4!&quot;</span>]; symbiosis [label=<span class="s">&quot;Symbiosis&quot;</span>, pos=<span class="s">&quot;-3.4,-1.5!&quot;</span>];
+  carbon [label=<span class="s">&quot;Carbon&quot;</span>, pos=<span class="s">&quot;4.8,2.8!&quot;</span>]; energy [label=<span class="s">&quot;Energy&quot;</span>, pos=<span class="s">&quot;4.8,-1.1!&quot;</span>]; water [label=<span class="s">&quot;Water&quot;</span>, pos=<span class="s">&quot;3.7,4.1!&quot;</span>];
+  resilience [label=<span class="s">&quot;Resilience&quot;</span>, pos=<span class="s">&quot;-1.7,-4.3!&quot;</span>]; feedback [label=<span class="s">&quot;Feedback&quot;</span>, pos=<span class="s">&quot;1.5,-4.3!&quot;</span>]; emergence [label=<span class="s">&quot;Emergence&quot;</span>, pos=<span class="s">&quot;0,-5.7!&quot;</span>];
+  ecology -- {soil forest ocean atmosphere} [color=<span class="s">&quot;#54d6c6aa&quot;</span>];
+  evolution -- {genes selection symbiosis} [color=<span class="s">&quot;#ff6f91aa&quot;</span>];
+  climate -- {carbon energy water} [color=<span class="s">&quot;#7b9cffaa&quot;</span>];
+  networks -- {resilience feedback emergence} [color=<span class="s">&quot;#ffd166aa&quot;</span>];
+  soil -- carbon; forest -- water; ocean -- carbon; atmosphere -- energy; symbiosis -- forest; selection -- resilience; feedback -- climate; emergence -- ecology; water -- ocean; genes -- networks;
+}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/ownership.svg" alt="Ownership" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">08 · ownership map</div>
+          <h2>Ownership</h2>
+          <p class="blurb">Who owns services, data, and operational outcomes?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">organization</span><span class="tag">teams</span><span class="tag">advanced</span></div>
+          <details><summary>src/ownership.d2</summary><pre><code>direction: right
+experience: Experience team { portal: Research portal; auth: Identity; notify: Notifications }
+platform: Platform team { gateway: Edge gateway; mesh: Service mesh; delivery: Delivery controller }
+data: Data team { ingest: Ingestion; quality: Quality engine; lake: Observation lake }
+science: Science team { model: Assimilation; forecast: Forecast API; alert: Coastal alerting }
+reliability: Reliability { slo: SLO catalog; telemetry: Telemetry; incident: Incident command }
+experience.portal -&gt; platform.gateway
+platform.gateway -&gt; data.ingest
+data.ingest -&gt; data.quality -&gt; data.lake
+data.lake -&gt; science.model -&gt; science.forecast
+science.forecast -&gt; experience.portal
+science.model -&gt; science.alert -&gt; experience.notify
+reliability.slo -&gt; platform.gateway
+reliability.slo -&gt; science.forecast
+platform.mesh -&gt; reliability.telemetry
+data.quality -&gt; reliability.telemetry
+reliability.telemetry -&gt; reliability.incident
+reliability.incident -&gt; platform.delivery
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/platform.svg" alt="Platform" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">09 · container architecture</div>
+          <h2>Platform</h2>
+          <p class="blurb">How are tenants isolated across control and data planes?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">platform</span><span class="tag">containers</span><span class="tag">advanced</span></div>
+          <details><summary>src/platform.d2</summary><pre><code>direction: right
+tenant: Tenant workloads { web: Web; jobs: Jobs; agents: Agents }
+control: Control plane { api: Admin API; policy: Policy engine; scheduler: Scheduler; catalog: Service catalog }
+data: Regional data plane { gateway: Gateway; mesh: Service mesh; compute: Compute pools; stream: Event fabric; store: Encrypted stores }
+ops: Operations { telemetry: Telemetry; deploy: Progressive delivery; incident: Incident command }
+tenant.web -&gt; data.gateway
+tenant.jobs -&gt; data.compute
+tenant.agents -&gt; data.mesh
+control.api -&gt; control.policy -&gt; control.scheduler
+control.scheduler -&gt; data.compute: signed placement
+control.catalog -&gt; data.gateway: routes
+data.gateway -&gt; data.mesh -&gt; data.compute
+data.compute -&gt; data.stream -&gt; data.store
+data.mesh -&gt; ops.telemetry
+ops.deploy -&gt; control.scheduler
+ops.telemetry -&gt; ops.incident
+ops.incident -&gt; control.policy: temporary guardrail
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/radial-ontology.svg" alt="Radial ontology" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">10 · radial hierarchy</div>
+          <h2>Radial ontology</h2>
+          <p class="blurb">How does a climate ontology branch and reconnect?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">twopi</span><span class="tag">ontology</span><span class="tag">advanced</span></div>
+          <details><summary>src/radial-ontology.dot</summary><pre><code>graph Climate {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, root=<span class="s">&quot;climate&quot;</span>, overlap=false, pad=.<span class="n">65</span>, ranksep=<span class="n">2.2</span>, label=<span class="s">&quot;CLIMATE ADAPTATION ONTOLOGY&quot;</span>, labelloc=t, fontsize=<span class="n">26</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>];
+  node [shape=ellipse, style=filled, fillcolor=<span class="s">&quot;#172a43dd&quot;</span>, color=<span class="s">&quot;#7896ab&quot;</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, penwidth=<span class="n">1.5</span>]; edge [color=<span class="s">&quot;#7896abaa&quot;</span>, penwidth=<span class="n">1.4</span>];
+  climate [label=<span class="s">&quot;CLIMATE\nADAPTATION&quot;</span>,width=<span class="n">2.0</span>,fillcolor=<span class="s">&quot;#17433edd&quot;</span>,color=<span class="s">&quot;#54d6c6&quot;</span>,fontsize=<span class="n">16</span>];
+  hazard [label=<span class="s">&quot;HAZARDS&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>]; exposure [label=<span class="s">&quot;EXPOSURE&quot;</span>,color=<span class="s">&quot;#ffd166&quot;</span>]; capacity [label=<span class="s">&quot;CAPACITY&quot;</span>,color=<span class="s">&quot;#7b9cff&quot;</span>]; action [label=<span class="s">&quot;ACTIONS&quot;</span>,color=<span class="s">&quot;#d183ff&quot;</span>];
+  climate -- {hazard exposure capacity action}; hazard -- {heat flood fire drought}; exposure -- {people housing energy habitat}; capacity -- {finance governance knowledge networks}; action -- {protect accommodate retreat transform};
+  heat -- health; flood -- drainage; fire -- forest; drought -- water; people -- equity; housing -- codes; energy -- microgrid; habitat -- corridor; finance -- insurance; governance -- policy; knowledge -- forecast; networks -- mutual_aid; protect -- seawall; accommodate -- cooling; retreat -- relocation; transform -- restoration;
+  flood -- policy [style=dashed,color=<span class="s">&quot;#54d6c6&quot;</span>]; heat -- cooling [style=dashed,color=<span class="s">&quot;#54d6c6&quot;</span>]; equity -- relocation [style=dashed,color=<span class="s">&quot;#ffd166&quot;</span>]; microgrid -- mutual_aid [style=dashed,color=<span class="s">&quot;#7b9cff&quot;</span>];
+}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/sequence.svg" alt="Sequence" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">11 · sequence</div>
+          <h2>Sequence</h2>
+          <p class="blurb">What happens across services during checkout?</p>
+          <div class="tags"><span class="tag">d2</span><span class="tag">sequence</span><span class="tag">services</span><span class="tag">advanced</span></div>
+          <details><summary>src/sequence.d2</summary><pre><code>shape: sequence_diagram
+client: Client
+edge: Edge Gateway
+cart: Cart Service
+inventory: Inventory
+payment: Payment
+events: Event Log
+client -&gt; edge: POST /checkout
+edge -&gt; cart: validate cart
+cart -&gt; inventory: reserve items
+inventory -&gt; cart: reservation token
+cart -&gt; payment: authorize amount
+payment -&gt; payment: risk + <span class="n">3</span>DS policy
+payment -&gt; cart: authorization id
+cart -&gt; events: append OrderPlaced
+events -&gt; inventory: confirm reservation
+events -&gt; edge: projection updated
+edge -&gt; client: <span class="n">202</span> + tracking id
+client -&gt; edge: <span class="s">&quot;GET /orders/{id}&quot;</span>
+edge -&gt; events: read projection
+events -&gt; edge: confirmed
+edge -&gt; client: <span class="n">200</span> confirmed
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot light"><img src="out/state-machine.svg" alt="State machine" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">12 · state machine</div>
+          <h2>State machine</h2>
+          <p class="blurb">Which transitions are legal under failure?</p>
+          <div class="tags"><span class="tag">graphviz</span><span class="tag">protocol</span><span class="tag">states</span><span class="tag">advanced</span></div>
+          <details><summary>src/state-machine.dot</summary><pre><code>digraph Protocol {
+  graph [bgcolor=<span class="s">&quot;transparent&quot;</span>, rankdir=LR, pad=.<span class="n">5</span>, nodesep=.<span class="n">48</span>, ranksep=.<span class="n">72</span>, label=<span class="s">&quot;RESILIENT SESSION STATE MACHINE&quot;</span>, labelloc=t, fontsize=<span class="n">26</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>];
+  node [shape=circle, style=filled, fillcolor=<span class="s">&quot;#172a43dd&quot;</span>, color=<span class="s">&quot;#7b9cff&quot;</span>, fontcolor=<span class="s">&quot;#eaf7ff&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, width=<span class="n">1.15</span>, penwidth=<span class="n">2</span>];
+  edge [color=<span class="s">&quot;#91a5ff&quot;</span>, fontcolor=<span class="s">&quot;#b9c9d5&quot;</span>, fontname=<span class="s">&quot;Avenir Next&quot;</span>, fontsize=<span class="n">10</span>, penwidth=<span class="n">1.5</span>];
+  start [shape=point,color=<span class="s">&quot;#54d6c6&quot;</span>]; idle [label=<span class="s">&quot;IDLE&quot;</span>]; auth [label=<span class="s">&quot;AUTH&quot;</span>]; active [label=<span class="s">&quot;ACTIVE&quot;</span>,fillcolor=<span class="s">&quot;#17433edd&quot;</span>,color=<span class="s">&quot;#54d6c6&quot;</span>]; drain [label=<span class="s">&quot;DRAIN&quot;</span>]; retry [label=<span class="s">&quot;RETRY&quot;</span>,fillcolor=<span class="s">&quot;#493d1cdd&quot;</span>,color=<span class="s">&quot;#ffd166&quot;</span>]; failed [label=<span class="s">&quot;FAILED&quot;</span>,shape=doublecircle,fillcolor=<span class="s">&quot;#4d2940dd&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>]; closed [label=<span class="s">&quot;CLOSED&quot;</span>,shape=doublecircle];
+  start -&gt; idle; idle -&gt; auth [label=<span class="s">&quot;connect&quot;</span>]; auth -&gt; active [label=<span class="s">&quot;accepted&quot;</span>]; auth -&gt; retry [label=<span class="s">&quot;timeout&quot;</span>]; retry -&gt; auth [label=<span class="s">&quot;backoff&quot;</span>]; retry -&gt; failed [label=<span class="s">&quot;budget spent&quot;</span>,color=<span class="s">&quot;#ff6f91&quot;</span>]; active -&gt; drain [label=<span class="s">&quot;shutdown&quot;</span>]; drain -&gt; closed [label=<span class="s">&quot;flushed&quot;</span>]; active -&gt; retry [label=<span class="s">&quot;transport loss&quot;</span>,color=<span class="s">&quot;#ffd166&quot;</span>]; active -&gt; active [label=<span class="s">&quot;heartbeat&quot;</span>]; drain -&gt; active [label=<span class="s">&quot;cancel shutdown&quot;</span>,style=dashed];
+}
+</code></pre></details>
+        </div>
+      </article>
+  </main>
+  <footer>
+    Generated by <code>tools/gallery.py</code> — regenerate with <code>just gallery</code>
+    after <code>just build</code>. Images are referenced from
+    <code>out/</code>, so open this file straight from the checkout.
+  </footer>
+</div>
+</body>
+</html>

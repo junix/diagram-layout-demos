@@ -1,0 +1,8 @@
+{
+  "title": "diagram-layout-demos",
+  "library": "Graphviz + D2",
+  "tagline": "Automatic layout treated as a rendering capability: Graphviz takes the clustered, radial, free-form, state, lineage and DAG topologies; D2 takes the modern semantic diagram DSLs.",
+  "rebuild": "just build",
+  "backdrop": "light",
+  "sources": "src/*"
+}
