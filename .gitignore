@@ -2,3 +2,15 @@
 __pycache__/
 out/*
 !out/*-transparent.png
+# --- appended by gitignore-sweep on 2026-09-03 ---
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
