@@ -2,6 +2,8 @@
 
 Automatic layout as a rendering capability across twelve reference scenarios: Graphviz handles clustered, radial, free-form, state, lineage, and DAG topology; D2 handles modern semantic diagram DSLs.
 
+Browse every demo with its source in **[gallery.html](gallery.html)** — searchable, follows your light/dark theme.
+
 `catalog.json` records the use case, question, diagram family, complexity, and engine-oriented tags.
 
 | Architecture | Knowledge | Incident | Data lineage |
